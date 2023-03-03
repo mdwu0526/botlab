@@ -9,7 +9,7 @@ find_package(Threads REQUIRED)
 find_package(lcm REQUIRED)
 
 find_library(common_utils REQUIRED)
-
+link_directories(lib/)
 add_executable(rplidar_driver src/rplidar_driver.cpp)
 
 target_link_libraries(rplidar_driver

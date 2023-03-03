@@ -11,7 +11,6 @@
 #include <mbot_lcm_msgs/lidar_t.hpp>
 
 #include <rplidar.h>
-#include <sl_lidar.h>
 #include <lcm_config.h>
 #include <common_utils/timestamp.h>
 
@@ -60,7 +59,7 @@ bool connect(RPlidarDriver* drv, const char* opt_com_path, _u32 opt_com_baudrate
     // If this driver thinks it is already connected, reset it.
     if (drv->isConnected()) {
         RPlidarDriver::DisposeDriver(drv);
-        drv = RPlidarDriver::CreateDriver();
+        drv = RPlidarDriver::CreateDriver(RPlidarDriver::DRIVER_TYPE_SERIALPORT);
     }
 
     if (IS_FAIL(drv->connect(opt_com_path, opt_com_baudrate))) {
@@ -113,7 +112,7 @@ int main(int argc, const char * argv[]) {
     if(!lcmConnection.good()){ return 1; }
 
     std::cout << "LIDAR data grabber for RPLIDAR." << std::endl;
-    std::cout << "Version: " << SL_LIDAR_SDK_VERSION << std::endl;
+    std::cout << "Version: " << RPLIDAR_SDK_VERSION << std::endl;
 
     // read pwm from command line if specified...
     if (argc>1) pwm = atoi(argv[1]);
@@ -135,7 +134,7 @@ int main(int argc, const char * argv[]) {
     }
 
     // create the driver instance
-    RPlidarDriver * drv = RPlidarDriver::CreateDriver();
+    RPlidarDriver * drv = RPlidarDriver::CreateDriver(RPlidarDriver::DRIVER_TYPE_SERIALPORT);
 
     if (!drv) {
         fprintf(stderr, "insufficent memory, exit\n");
@@ -156,15 +155,15 @@ int main(int argc, const char * argv[]) {
     drv->startMotor();
     // start scan...
     drv->setMotorPWM(pwm);
-    drv->startScan(0, 1);
+    drv->startScan();
 
     // fetch result and print it out...
     while (1) {
 
-        rplidar_response_measurement_node_hq_t nodes[360*2];
+        rplidar_response_measurement_node_t nodes[360*2];
         size_t   count = _countof(nodes);
 
-        op_result = drv->grabScanDataHq(nodes, count);
+        op_result = drv->grabScanData(nodes, count);
 
         int64_t now = utime_now();  // get current timestamp in milliseconds
 
@@ -184,9 +183,9 @@ int main(int argc, const char * argv[]) {
             for (int pos = 0; pos < (int)count ; ++pos) {
                 now = utime_now();//(int64_t) tv.tv_sec * 1000000 + tv.tv_usec; //get current timestamp in milliseconds
             	int scan_idx = (int)count - pos - 1;
-                newLidar.ranges[pos] = nodes[scan_idx].dist_mm_q2/4000.0f;
-            	newLidar.thetas[pos] = 2*PI - (nodes[scan_idx].angle_z_q14 >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)*PI/11520.0f;
-            	newLidar.intensities[pos] = nodes[scan_idx].quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT;
+                newLidar.ranges[pos] = nodes[scan_idx].distance_q2/4000.0f;
+            	newLidar.thetas[pos] = 2*PI - (nodes[scan_idx].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)*PI/11520.0f;
+            	newLidar.intensities[pos] = nodes[scan_idx].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT;
             	newLidar.times[pos] = now;
             }
 
@@ -199,7 +198,7 @@ int main(int argc, const char * argv[]) {
                 drv->startMotor();
                 // start scan...
                 drv->setMotorPWM(pwm);
-                drv->startScan(0,1);
+                drv->startScan();
             }
         }
 
