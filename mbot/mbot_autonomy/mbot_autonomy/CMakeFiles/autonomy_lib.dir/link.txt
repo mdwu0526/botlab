@@ -1,0 +1,2 @@
+/usr/bin/ar qc libautonomy_lib.a  CMakeFiles/autonomy_lib.dir/src/planning/astar.cpp.o CMakeFiles/autonomy_lib.dir/src/planning/frontiers.cpp.o CMakeFiles/autonomy_lib.dir/src/planning/motion_planner.cpp.o CMakeFiles/autonomy_lib.dir/src/planning/obstacle_distance_grid.cpp.o CMakeFiles/autonomy_lib.dir/src/slam/occupancy_grid.cpp.o
+/usr/bin/ranlib libautonomy_lib.a

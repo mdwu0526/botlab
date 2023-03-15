@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../common_utils/include/common_utils/lcm_config.h
+
+../common_utils/include/common_utils/time_util.h
+stdint.h
+-
+sys/time.h
+-
+time.h
+-
+unistd.h
+-
+
+/home/pi/botlab-w23/mbot/mbot_autonomy/src/mbot/timesync.cpp
+lcm/lcm-cpp.hpp
+-
+mbot_lcm_msgs/timestamp_t.hpp
+-
+common_utils/lcm_config.h
+-
+common_utils/time_util.h
+-
+mbot/mbot_channels.h
+-
+iostream
+-
+
+include/mbot/mbot_channels.h
+
+mbot_lcm_msgs/mbot_lcm_msgs/timestamp_t.hpp
+lcm/lcm_coretypes.h
+-
+

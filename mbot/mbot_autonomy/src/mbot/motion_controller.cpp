@@ -40,10 +40,10 @@ class StraightManeuverController : public ManeuverControllerBase
 {
 
 private:
-    float fwd_pid[3] = {1.0, 0, 0};
+    float fwd_pid[3] = {3.0, 0.5, 0};
     float fwd_sum_error = 0;
     float fwd_last_error = 0;
-    float turn_pid[3] = {3.0, 0, 0};
+    float turn_pid[3] = {12.0, 1, 0};
     float turn_sum_error = 0;
     float turn_last_error = 0;
 public:
@@ -59,7 +59,7 @@ public:
         fwd_sum_error += d_fwd;
         float fwd_der = 0;
         if (fwd_last_error > 0)
-            fwd_der = (d_fwd - fwd_last_error) / 0.05;
+            fwd_der = (d_fwd - fwd_last_error) / 0.05; // Where does this 0.05 come from?
         
         float fwd_vel = fwd_pid[0] * d_fwd + fwd_pid[1] * fwd_sum_error + fwd_pid[2] * fwd_der;
         // fprintf(stdout,"Fwd error: %f\tFwd vel: %f\n", d_fwd, fwd_vel);
@@ -84,7 +84,7 @@ public:
 class TurnManeuverController : public ManeuverControllerBase
 {
 private:
-    float turn_pid[3] = {3.0, 0, 0};
+    float turn_pid[3] = {12.0, 1, 0};
     float turn_sum_error = 0;
     float turn_last_error = 0;
 public:

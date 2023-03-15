@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../common_utils/include/common_utils/geometric/angle_functions.hpp
+cmath
+-
+
+../common_utils/include/common_utils/geometric/interpolation.hpp
+common_utils/geometric/angle_functions.hpp
+../common_utils/include/common_utils/geometric/common_utils/geometric/angle_functions.hpp
+utility
+-
+cassert
+-
+
+../common_utils/include/common_utils/geometric/pose_trace.hpp
+mbot_lcm_msgs/pose_xyt_t.hpp
+-
+cstdint
+-
+vector
+-
+
+/home/pi/botlab-w23/mbot/common_utils/src/geometric/pose_trace.cpp
+common_utils/geometric/pose_trace.hpp
+-
+common_utils/geometric/interpolation.hpp
+-
+algorithm
+-
+iostream
+-
+cassert
+-
+
+mbot_lcm_msgs/mbot_lcm_msgs/pose_xyt_t.hpp
+lcm/lcm_coretypes.h
+-
+
