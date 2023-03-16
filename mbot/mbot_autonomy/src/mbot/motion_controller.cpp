@@ -406,6 +406,15 @@ int main(int argc, char** argv)
     lcm::LCM lcmInstance(MULTICAST_URL);
     MotionController controller(&lcmInstance);
 
+    float MAX_SPEED = 0.3;
+    float max_ang_vel = M_PI * 2.0 / 3.0;
+    
+    if(argc > 2)
+    {
+        MAX_SPEED = std::atof(argv[1]);
+        max_ang_vel = std::atof(argv[2]); // Radians per second
+    }
+
     signal(SIGINT, exit);
     
     while(true)
@@ -416,11 +425,10 @@ int main(int argc, char** argv)
             mbot_lcm_msgs::mbot_motor_command_t cmd = controller.updateCommand();
             // Limit command values
             // Fwd vel
-            if (cmd.trans_v > 0.3) cmd.trans_v = 0.3;
-            else if (cmd.trans_v < -0.3) cmd.trans_v = -0.3;
+            if (cmd.trans_v > MAX_SPEED) cmd.trans_v = MAX_SPEED;
+            else if (cmd.trans_v < -MAX_SPEED) cmd.trans_v = -MAX_SPEED;
 
             // Angular vel
-            float max_ang_vel = M_PI * 2.0 / 3.0;
             if (cmd.angular_v > max_ang_vel) cmd.angular_v = max_ang_vel;
             else if (cmd.angular_v < -max_ang_vel) cmd.angular_v = -max_ang_vel;
 

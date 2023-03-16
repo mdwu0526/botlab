@@ -268,6 +268,19 @@ motion_controller/fast:
 .PHONY : motion_controller/fast
 
 #=============================================================================
+# Target rules for targets named drive_checkpoint1
+
+# Build rule for target.
+drive_checkpoint1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 drive_checkpoint1
+.PHONY : drive_checkpoint1
+
+# fast build rule for target.
+drive_checkpoint1/fast:
+	$(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build.make mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build
+.PHONY : drive_checkpoint1/fast
+
+#=============================================================================
 # Target rules for targets named slam
 
 # Build rule for target.
@@ -429,6 +442,7 @@ help:
 	@echo "... autonomy_lib"
 	@echo "... botgui"
 	@echo "... common_utils"
+	@echo "... drive_checkpoint1"
 	@echo "... drive_square"
 	@echo "... exploration"
 	@echo "... imagesource"

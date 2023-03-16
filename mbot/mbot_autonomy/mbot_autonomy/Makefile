@@ -88,6 +88,18 @@ install/local/fast: preinstall/fast
 	/usr/local/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local/fast
 
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/local/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -119,18 +131,6 @@ list_install_components:
 list_install_components/fast: list_install_components
 
 .PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/local/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/local/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
 
 # Special rule for the target install/strip
 install/strip: preinstall
@@ -205,6 +205,21 @@ motion_controller: mbot_autonomy/CMakeFiles/motion_controller.dir/rule
 motion_controller/fast:
 	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/motion_controller.dir/build.make mbot_autonomy/CMakeFiles/motion_controller.dir/build
 .PHONY : motion_controller/fast
+
+# Convenience name for target.
+mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/rule:
+	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/rule
+.PHONY : mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/rule
+
+# Convenience name for target.
+drive_checkpoint1: mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/rule
+
+.PHONY : drive_checkpoint1
+
+# fast build rule for target.
+drive_checkpoint1/fast:
+	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build.make mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build
+.PHONY : drive_checkpoint1/fast
 
 # Convenience name for target.
 mbot_autonomy/CMakeFiles/slam.dir/rule:
@@ -310,6 +325,33 @@ timesync: mbot_autonomy/CMakeFiles/timesync.dir/rule
 timesync/fast:
 	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/timesync.dir/build.make mbot_autonomy/CMakeFiles/timesync.dir/build
 .PHONY : timesync/fast
+
+src/mbot/drive_checkpoint1.o: src/mbot/drive_checkpoint1.cpp.o
+
+.PHONY : src/mbot/drive_checkpoint1.o
+
+# target to build an object file
+src/mbot/drive_checkpoint1.cpp.o:
+	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build.make mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/src/mbot/drive_checkpoint1.cpp.o
+.PHONY : src/mbot/drive_checkpoint1.cpp.o
+
+src/mbot/drive_checkpoint1.i: src/mbot/drive_checkpoint1.cpp.i
+
+.PHONY : src/mbot/drive_checkpoint1.i
+
+# target to preprocess a source file
+src/mbot/drive_checkpoint1.cpp.i:
+	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build.make mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/src/mbot/drive_checkpoint1.cpp.i
+.PHONY : src/mbot/drive_checkpoint1.cpp.i
+
+src/mbot/drive_checkpoint1.s: src/mbot/drive_checkpoint1.cpp.s
+
+.PHONY : src/mbot/drive_checkpoint1.s
+
+# target to generate assembly for a file
+src/mbot/drive_checkpoint1.cpp.s:
+	cd /home/pi/botlab-w23/mbot/mbot_autonomy && $(MAKE) $(MAKESILENT) -f mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/build.make mbot_autonomy/CMakeFiles/drive_checkpoint1.dir/src/mbot/drive_checkpoint1.cpp.s
+.PHONY : src/mbot/drive_checkpoint1.cpp.s
 
 src/mbot/drive_square.o: src/mbot/drive_square.cpp.o
 
@@ -943,6 +985,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... astar_test"
 	@echo "... autonomy_lib"
+	@echo "... drive_checkpoint1"
 	@echo "... drive_square"
 	@echo "... exploration"
 	@echo "... motion_controller"
@@ -950,6 +993,9 @@ help:
 	@echo "... obstacle_distance_grid_test"
 	@echo "... slam"
 	@echo "... timesync"
+	@echo "... src/mbot/drive_checkpoint1.o"
+	@echo "... src/mbot/drive_checkpoint1.i"
+	@echo "... src/mbot/drive_checkpoint1.s"
 	@echo "... src/mbot/drive_square.o"
 	@echo "... src/mbot/drive_square.i"
 	@echo "... src/mbot/drive_square.s"

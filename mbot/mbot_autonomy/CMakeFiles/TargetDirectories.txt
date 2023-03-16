@@ -22,12 +22,13 @@
 /home/pi/botlab-w23/mbot/mbot_autonomy/common_utils/CMakeFiles/rebuild_cache.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/common_utils/CMakeFiles/common_utils.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/install/local.dir
+/home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/install.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/drive_square.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/edit_cache.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/rebuild_cache.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/motion_controller.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/list_install_components.dir
-/home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/install.dir
+/home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/drive_checkpoint1.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/slam.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/install/strip.dir
 /home/pi/botlab-w23/mbot/mbot_autonomy/mbot_autonomy/CMakeFiles/exploration.dir
