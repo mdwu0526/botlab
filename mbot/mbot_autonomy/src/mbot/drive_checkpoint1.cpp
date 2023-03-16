@@ -114,3 +114,4 @@ int main(int argc, char** argv)
     std::cout << "publish to: " << CONTROLLER_PATH_CHANNEL << std::endl;
     lcmInstance.publish(CONTROLLER_PATH_CHANNEL, &path);
     sleep(1);
+}
