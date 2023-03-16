@@ -41,6 +41,19 @@ target_include_directories(drive_square PRIVATE
   include
 )
 
+# DRIVE CHECKPOINT1 TEST
+add_executable(drive_checkpoint1 src/mbot/drive_checkpoint1.cpp)
+
+target_link_libraries(drive_checkpoint1
+  common_utils
+  lcm
+  mbot_lcm_msgs-cpp
+)
+
+target_include_directories(drive_checkpoint1 PRIVATE
+  include
+)
+
 # SLAM
 add_executable(slam src/slam/slam_main.cpp
   src/slam/action_model.cpp
