@@ -84,7 +84,7 @@ public:
 class TurnManeuverController : public ManeuverControllerBase
 {
 private:
-    float turn_pid[3] = {12.0, 1, 0};
+    float turn_pid[3] = {40, 10, 1};
     float turn_sum_error = 0;
     float turn_last_error = 0;
 public:
@@ -147,7 +147,7 @@ class SmartManeuverController : public ManeuverControllerBase
 {
 
 private:
-    float pid[3] = {1.0, 2.5, 0.0}; //kp, ka, kb
+    float pid[3] = {3,3.001,-0.001};//{1.5, 6, -0.015} high speed gains; //{1, 2.5, 0};//  //kp, ka, kb
     float d_end_crit = 0.02;
     float d_end_midsteps = 0.08;
     float angle_end_crit = 0.2;
