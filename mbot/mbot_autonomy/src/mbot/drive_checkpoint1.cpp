@@ -2,6 +2,7 @@
 #include <mbot/mbot_channels.h>
 #include <mbot_lcm_msgs/pose_xyt_t.hpp>
 #include <mbot_lcm_msgs/robot_path_t.hpp> // <lcmtypes/robot_path_t.hpp>
+#include <mbot_lcm_msgs/reset_odometry_t.hpp>
 #include <lcm/lcm-cpp.hpp>
 #include <iostream>
 #include <unistd.h>
@@ -111,6 +112,10 @@ int main(int argc, char** argv)
     path.path_length = path.path.size();
     
     lcm::LCM lcmInstance(MULTICAST_URL);
+
+    mbot_lcm_msgs::reset_odometry_t rezero {0.0, 0.0, 0.0};
+    lcmInstance.publish(ODOMETRY_RESET_CHANNEL, &rezero);
+
     std::cout << "publish to: " << CONTROLLER_PATH_CHANNEL << std::endl;
     lcmInstance.publish(CONTROLLER_PATH_CHANNEL, &path);
     sleep(1);
