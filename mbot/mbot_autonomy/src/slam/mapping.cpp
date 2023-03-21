@@ -18,11 +18,31 @@ void Mapping::updateMap(const mbot_lcm_msgs::lidar_t& scan,
                         OccupancyGrid& map)
 {
     //////////////// TODO: Implement your occupancy grid algorithm here ///////////////////////
+    MovingLaserScan movingScan(scan, previousPose_, pose);
+
+    for(auto& ray : movingScan) {
+        scoreEndpoint(ray, map);
+    }
+
+    for(auto& ray : movingScan) {
+        scoreRay(ray, map);
+    }
+
+    previousPose_ = pose;
 }
 
 void Mapping::scoreEndpoint(const adjusted_ray_t& ray, OccupancyGrid& map)
 {
 //////////////// TODO: Implement your endpoint score ///////////////////////
+    Point<float> Endpoint = ray.origin;
+    Endpoint.x += ray.range*cos(ray.theta);
+    Endpoint.y += ray.range*sin(ray.theta);
+    auto Endcell = global_position_to_grid_cell(Endpoint, map);
+    if (isCellInGrid(Endcell.x, Endcell.y)) {
+        CellOdds prev_odds = logOdds(Endcell.x, Endcell.y);
+        setLogOdds(Endcell.x, Endcell.y, prev_odds + 4);
+    }
+    
 }
 
 void Mapping::scoreRay(const adjusted_ray_t& ray, OccupancyGrid& map)
