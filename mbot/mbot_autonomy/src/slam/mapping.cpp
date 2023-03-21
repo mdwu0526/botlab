@@ -34,13 +34,28 @@ void Mapping::updateMap(const mbot_lcm_msgs::lidar_t& scan,
 void Mapping::scoreEndpoint(const adjusted_ray_t& ray, OccupancyGrid& map)
 {
 //////////////// TODO: Implement your endpoint score ///////////////////////
+    // Point<float> f_end = global_position_to_grid_position(
+    //     Point<float>(
+    //         ray.origin.x + ray.range * std::cos(ray.theta),
+    //         ray.origin.y + ray.range * std::sin(ray.theta)
+    //         ), 
+    //     map
+    //     );
+
+    // // Cell
+    // Point<int> end_cell;
+    // end_cell.x = static_cast<int>(f_end.x);
+    // end_cell.y = static_cast<int>(f_end.y);
+    // map.setLogOdds(end_cell.x, end_cell.y, kHitOdds_);
+    
+
     Point<float> Endpoint = ray.origin;
     Endpoint.x += ray.range*cos(ray.theta);
     Endpoint.y += ray.range*sin(ray.theta);
     auto Endcell = global_position_to_grid_cell(Endpoint, map);
-    if (isCellInGrid(Endcell.x, Endcell.y)) {
-        CellOdds prev_odds = logOdds(Endcell.x, Endcell.y);
-        setLogOdds(Endcell.x, Endcell.y, prev_odds + 4);
+    if (map.isCellInGrid(Endcell.x, Endcell.y)) {
+        CellOdds prev_odds = map.logOdds(Endcell.x, Endcell.y);
+        map.setLogOdds(Endcell.x, Endcell.y, prev_odds + kHitOdds_);
     }
     
 }
