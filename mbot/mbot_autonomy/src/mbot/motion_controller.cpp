@@ -147,10 +147,10 @@ class SmartManeuverController : public ManeuverControllerBase
 {
 
 private:
-    float pid[3] = {3,3.001,-0.001};//{1.5, 6, -0.015} high speed gains; //{1, 2.5, 0};//  //kp, ka, kb
-    float d_end_crit = 0.02;
-    float d_end_midsteps = 0.08;
-    float angle_end_crit = 0.2;
+    float pid[3] = {1.2,2.4,-0.001};//{1.5, 6, -0.015} high speed gains; //{1, 2.5, 0};//  //kp, ka, kb
+    float d_end_crit = 0.01; // 0.02
+    float d_end_midsteps = 0.08; // .08
+    float angle_end_crit = 0.1; // 0.2
 public:
     SmartManeuverController() = default;   
     virtual mbot_lcm_msgs::mbot_motor_command_t get_command(const mbot_lcm_msgs::pose_xyt_t& pose, const mbot_lcm_msgs::pose_xyt_t& target) override
@@ -174,7 +174,7 @@ public:
         float turn_vel = pid[1] * alpha + pid[2] * beta;
 
         // If alpha is more than 45 degrees, turn in place and then go
-        if (fabs(alpha) > M_PI_4)
+        if (fabs(alpha) > M_PI_4/1)
         {
             fwd_vel = 0;
         }
@@ -234,6 +234,7 @@ public:
                     if (is_last_target)
                         state_ = FINAL_TURN;
                     else if(!assignNextTarget())
+                        // cmd = smart_controller.get_command(pose, pose);
                         printf("Target reached! (%f,%f,%f)\n", target.x, target.y, target.theta);
                 }
                 else cmd = smart_controller.get_command(pose, target);
@@ -406,8 +407,8 @@ int main(int argc, char** argv)
     lcm::LCM lcmInstance(MULTICAST_URL);
     MotionController controller(&lcmInstance);
 
-    float MAX_SPEED = 0.3;
-    float max_ang_vel = M_PI * 2.0 / 3.0;
+    float MAX_SPEED = 0.2;
+    float max_ang_vel = M_PI/4; //* 2.0 / 3.0;
     
     if(argc > 2)
     {

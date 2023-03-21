@@ -40,7 +40,12 @@ int main(int argc, char** argv)
     path.path.push_back(nextPose);
 
     nextPose.x += 0.0f;
-    nextPose.y -= 1.22f;
+    nextPose.y -= 0.61f;
+    nextPose.theta = 0.0f;
+    path.path.push_back(nextPose);
+
+    nextPose.x += 0.0f;
+    nextPose.y -= 0.61f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
 
@@ -50,7 +55,12 @@ int main(int argc, char** argv)
     path.path.push_back(nextPose);
 
     nextPose.x += 0.0f;
-    nextPose.y += 1.22f;
+    nextPose.y += 0.61f;
+    nextPose.theta = 0.0f;
+    path.path.push_back(nextPose);
+
+    nextPose.x += 0.0f;
+    nextPose.y += 0.61f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
 
