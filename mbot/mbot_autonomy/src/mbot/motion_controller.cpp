@@ -147,7 +147,7 @@ class SmartManeuverController : public ManeuverControllerBase
 {
 
 private:
-    float pid[3] = {1.2,2.4,-0.001};//{1.5, 6, -0.015} high speed gains; //{1, 2.5, 0};//  //kp, ka, kb
+    float pid[3] = {1.5, 6, -0.015};//{1.2,2.4,-0.001}; //{1, 2.5, 0};//  //kp, ka, kb
     float d_end_crit = 0.01; // 0.02
     float d_end_midsteps = 0.08; // .08
     float angle_end_crit = 0.1; // 0.2
@@ -407,8 +407,8 @@ int main(int argc, char** argv)
     lcm::LCM lcmInstance(MULTICAST_URL);
     MotionController controller(&lcmInstance);
 
-    float MAX_SPEED = 0.2;
-    float max_ang_vel = M_PI/4; //* 2.0 / 3.0;
+    float MAX_SPEED = 0.8;//0.2;
+    float max_ang_vel = M_PI; // M_PI/4; //* 2.0 / 3.0;
     
     if(argc > 2)
     {
