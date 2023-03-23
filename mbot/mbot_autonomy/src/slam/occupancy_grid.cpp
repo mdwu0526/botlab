@@ -1,7 +1,7 @@
 #include <slam/occupancy_grid.hpp>
 #include <fstream>
 #include <cassert>
-
+#include <limits>
 #include <iostream>
 using namespace std;
 
@@ -76,6 +76,28 @@ void OccupancyGrid::setLogOdds(int x, int y, CellOdds value)
         operator()(x, y) = value;
     }
 }
+
+void OccupancyGrid::addLogOdds(int x, int y, CellOdds value)
+{
+    if(isCellInGrid(x, y))
+    {
+        CellOdds upperLimit = numeric_limits<CellOdds>::max();
+        CellOdds lowerLimit = numeric_limits<CellOdds>::min();
+        // If adding value increases (x, y) past CellOdds upperLimit, set it to the upperLimit
+        if (upperLimit - operator()(x, y) < value) {
+            operator()(x, y) = upperLimit;
+        }
+        // Otherwise, if adding value decreases (x, y) past CellOdds lowerLimit, set it to the lowerLimit
+        else if (lowerLimit - operator()(x, y) < value) {
+            operator()(x, y) = lowerLimit;
+        }
+        else {
+            operator()(x, y) += value;
+        }
+    }
+}
+
+
 
 
 mbot_lcm_msgs::occupancy_grid_t OccupancyGrid::toLCM(void) const
