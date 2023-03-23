@@ -157,6 +157,13 @@ public:
     CellOdds  operator()(int x, int y) const { return cells_[cellIndex(x, y)]; }
 
     /**
+     * @brief 
+     * 
+     */
+    void OccupancyGrid::addLogOdds(int x, int y, CellOdds value);
+
+
+    /**
     * toLCM creates an LCM message from the grid.
     */
     mbot_lcm_msgs::occupancy_grid_t toLCM(void) const;
