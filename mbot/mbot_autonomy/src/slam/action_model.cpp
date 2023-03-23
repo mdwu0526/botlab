@@ -28,7 +28,29 @@ bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 {
     ////////////// TODO: Implement code here to compute a new distribution of the motion of the robot ////////////////
     bool moved = 0;
-    return moved;
+    double dx = odometry.x - previousPose_.x,
+           dy = odometry.y - previousPose_.y,
+           dtheta = odometry.theta - previousPose_.theta;
+
+    double ds = sqrt(pow(dx,2) + pow(dy,2)),
+           alpha = atan2(dy,dx) - previousPose_.theta;
+    if (ds < min_dist_ && abs(dtheta) < min_theta_) {
+        return moved;
+    }
+    else {
+        moved = 1;
+        alpha_ = alpha;
+        ds_ = ds;
+        dthetaMalpha_ = dtheta - alpha;
+        utime_ = previousPose_.utime;
+
+        alphaStd_ = k1_*abs(alpha_);
+        dsStd_ = k2_*abs(ds_);
+        dthetaMalphaStd_ = k1_*abs(dthetaMalpha_);
+        
+        // resetPrevious(odometry);
+        return moved;
+    }
 }
 
 mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle_t& sample)
