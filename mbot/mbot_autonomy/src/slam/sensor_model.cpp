@@ -16,5 +16,8 @@ double SensorModel::likelihood(const mbot_lcm_msgs::particle_t& sample,
     double likelihood = 0.0;
     MovingLaserScan movingScan(scan, sample.parent_pose, sample.pose, ray_stride_);
     // TODO
+    for(const auto &ray : movingScan){
+        // Mapping::scoreRay(ray,map);
+    }
     return likelihood;
 }

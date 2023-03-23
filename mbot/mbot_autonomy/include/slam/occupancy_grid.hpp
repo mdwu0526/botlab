@@ -160,7 +160,7 @@ public:
      * @brief 
      * 
      */
-    void OccupancyGrid::addLogOdds(int x, int y, CellOdds value);
+    void addLogOdds(int x, int y, CellOdds value);
 
 
     /**

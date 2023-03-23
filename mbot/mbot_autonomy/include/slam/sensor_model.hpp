@@ -10,6 +10,7 @@ struct particle_t;
 #include <mbot_lcm_msgs/particle_t.hpp>
 #include <slam/moving_laser_scan.hpp>
 #include <slam/occupancy_grid.hpp>
+#include <slam/mapping.hpp>
 #include <utils/grid_utils.hpp>
 #include <list>
 #include <numeric>

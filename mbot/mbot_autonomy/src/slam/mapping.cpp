@@ -47,7 +47,7 @@ void Mapping::scoreEndpoint(const adjusted_ray_t& ray, OccupancyGrid& map)
     end_cell.y = static_cast<int>(f_end.y);
     // added new map.addLogOdds function (in occupancy_grid.cpp) that checks upper/lowerbounds of type
     // Add (positive) kMissOdds_ because there's no easy way to stop scoreRay short of also scoring the end of the laser.
-    map.addLogOdds(end_cell.x, end_cell.y, kHitOdds_ + kMissOdds_)
+    map.addLogOdds(end_cell.x, end_cell.y, kHitOdds_ + kMissOdds_);
 
     return;
 }
@@ -120,7 +120,7 @@ std::vector<Point<int>> Mapping::divideAndStepAlongRay(const adjusted_ray_t& ray
 
 
 
-void plotLineLow(int x0, int y0, int x1, int y1, std::vector<Point<int>>& cells_touched) {
+void Mapping::plotLineLow(int x0, int y0, int x1, int y1, std::vector<Point<int>>& cells_touched) {
     int dx = x1 - x0;
     int dy = y1 - y0;
     int yi = 1;
@@ -144,7 +144,7 @@ void plotLineLow(int x0, int y0, int x1, int y1, std::vector<Point<int>>& cells_
     return;
 }
 
-void plotLineHigh(int x0, int y0, int x1, int y1, std::vector<Point<int>>& cells_touched) {
+void Mapping::plotLineHigh(int x0, int y0, int x1, int y1, std::vector<Point<int>>& cells_touched) {
     int dx = x1 - x0;
     int dy = y1 - y0;
     int xi = 1;
