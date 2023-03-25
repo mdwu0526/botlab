@@ -59,6 +59,7 @@ public:
 private:
     const int ray_stride_;
     ///////// TODO: Add any private members for your SensorModel ///////////////////
+    double scoreRay(const adjusted_ray_t& ray, const OccupancyGrid& map);
 };
 
 #endif // SLAM_SENSOR_MODEL_HPP

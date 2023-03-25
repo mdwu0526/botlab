@@ -7,6 +7,8 @@
 
 #include <common_utils/geometric/point.hpp>
 #include <mbot_lcm_msgs/occupancy_grid_t.hpp>
+#include <slam/occupancy_grid.hpp>
+
 
 
 typedef int8_t CellOdds;   ///< Type used to represent the data in a cell
@@ -158,6 +160,7 @@ public:
 
     /**
      * @brief 
+     * Adds LogOdds to a current existing cell
      * 
      */
     void addLogOdds(int x, int y, CellOdds value);

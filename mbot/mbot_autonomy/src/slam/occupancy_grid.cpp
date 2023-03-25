@@ -88,7 +88,7 @@ void OccupancyGrid::addLogOdds(int x, int y, CellOdds value)
             operator()(x, y) = upperLimit;
         }
         // Otherwise, if adding value decreases (x, y) past CellOdds lowerLimit, set it to the lowerLimit
-        else if (lowerLimit - operator()(x, y) < value) {
+        else if (lowerLimit + operator()(x, y) < value) {
             operator()(x, y) = lowerLimit;
         }
         else {
