@@ -10,8 +10,8 @@
 
 
 ActionModel::ActionModel(void)
-: k1_(0.01f)
-, k2_(0.01f)
+: k1_(0.01f) // 0.01f
+, k2_(0.01f) // 0.01f
 , min_dist_(0.0025)
 , min_theta_(0.02)
 , initialized_(false)
@@ -22,6 +22,7 @@ ActionModel::ActionModel(void)
     ds_ = 0.0;
     dtheta_ = 0.0;
     utime_ = 0;
+    previousPose_.x = 0; previousPose_.y = 0; previousPose_.theta = 0;
 }
 
 
@@ -41,19 +42,17 @@ bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 
     double ds = sqrt(pow(dx,2) + pow(dy,2)),
            alpha = atan2(dy,dx) - previousPose_.theta;
-
-    if (ds >= min_dist_ || abs(dtheta) >= min_theta_) {
+    // std::cout << "fabs(dtheta) = "<<dtheta<<", ds = "<<ds<<"\n";
+    if (fabs(ds) >= min_dist_ || fabs(dtheta) >= min_theta_) {
         moved = 1;
         alpha_ = alpha;
         ds_ = ds;
         dtheta_ = dtheta_;
         utime_ = odometry.utime;
 
-        std::normal_distribution<double> eps1_(0.0, k1_*abs(alpha_));
-        std::normal_distribution<double> eps2_(0.0, k2_*abs(ds_));
-        std::normal_distribution<double> eps3_(0.0, k1_*abs(dtheta_ - alpha_));
-        
-        // resetPrevious(odometry);
+        std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
+        std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
+        std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
     }
     return moved;
 }
@@ -62,15 +61,17 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
 {
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
+
+    // Sam's Notes: sample here is the parent sample...
     mbot_lcm_msgs::particle_t newSample = sample;
     // Setup random distributions for each epsilon
     std::mt19937 gen(rd_());
 
     // Randomized positions (Action&SensorModel.pdf, Slide 5)
-    newSample.pose = newSample.parent_pose;
-    newSample.pose.x += (ds_ + eps2_(gen)*cos(newSample.pose.theta + alpha_ + eps1_(gen)));
-    newSample.pose.y += (ds_ + eps2_(gen)*sin(newSample.pose.theta + alpha_ + eps1_(gen)));
-    newSample.pose.theta += dtheta_ + eps1_(gen) + eps3_(gen);
+    newSample.parent_pose = sample.pose;
+    newSample.pose.x = sample.pose.x + (ds_ + eps2_(gen)) * cos(sample.pose.theta + alpha_ + eps1_(gen));
+    newSample.pose.y = sample.pose.y + (ds_ + eps2_(gen)) * sin(sample.pose.theta + alpha_ + eps1_(gen));
+    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen);
 
     return newSample;
 }
