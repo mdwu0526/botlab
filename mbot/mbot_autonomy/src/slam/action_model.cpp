@@ -17,6 +17,11 @@ ActionModel::ActionModel(void)
 , initialized_(false)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
+    initialized_ = true;
+    alpha_ = 0.0;
+    ds_ = 0.0;
+    dtheta_ = 0.0;
+    utime_ = 0;
 }
 
 
