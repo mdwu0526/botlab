@@ -83,15 +83,6 @@ void OccupancyGrid::addLogOdds(int x, int y, CellOdds value)
     {
         CellOdds upperLimit = numeric_limits<CellOdds>::max();
         CellOdds lowerLimit = numeric_limits<CellOdds>::min();
-<<<<<<< HEAD
-        // If adding value increases (x, y) past CellOdds upperLimit, set it to the upperLimit
-        if (upperLimit - operator()(x, y) < value) {
-            operator()(x, y) = upperLimit;
-        }
-        // Otherwise, if adding value decreases (x, y) past CellOdds lowerLimit, set it to the lowerLimit
-        else if (lowerLimit + operator()(x, y) < value) {
-            operator()(x, y) = lowerLimit;
-=======
         // if positive
         if (value > 0) {
             if (upperLimit - operator()(x, y) < value) {
@@ -100,7 +91,6 @@ void OccupancyGrid::addLogOdds(int x, int y, CellOdds value)
             else {
                 operator()(x, y) += value;
             }
->>>>>>> refs/remotes/origin/main
         }
         // if negative
         else {

@@ -59,8 +59,7 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
     mbot_lcm_msgs::particle_t newSample = sample;
     // Setup random distributions for each epsilon
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::mt19937 gen(rd_());
 
     // Randomized positions (Action&SensorModel.pdf, Slide 5)
     newSample.pose = newSample.parent_pose;

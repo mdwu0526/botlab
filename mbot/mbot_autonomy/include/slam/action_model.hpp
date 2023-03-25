@@ -72,8 +72,6 @@ private:
 
     std::random_device rd_;
 
-    std::mt19937 numberGenerator_;
-
     std::normal_distribution<double> eps1_;
     std::normal_distribution<double> eps2_;
     std::normal_distribution<double> eps3_;
