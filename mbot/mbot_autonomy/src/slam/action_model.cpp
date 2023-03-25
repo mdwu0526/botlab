@@ -6,6 +6,8 @@
 #include <iostream>
 #include <algorithm>
 
+#include <random>
+
 
 ActionModel::ActionModel(void)
 : k1_(0.01f)
@@ -34,23 +36,21 @@ bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 
     double ds = sqrt(pow(dx,2) + pow(dy,2)),
            alpha = atan2(dy,dx) - previousPose_.theta;
-    if (ds < min_dist_ && abs(dtheta) < min_theta_) {
-        return moved;
-    }
-    else {
+
+    if (ds >= min_dist_ || abs(dtheta) >= min_theta_) {
         moved = 1;
         alpha_ = alpha;
         ds_ = ds;
-        dthetaMalpha_ = dtheta - alpha;
-        utime_ = previousPose_.utime;
+        dtheta_ = dtheta_;
+        utime_ = odometry.utime;
 
-        alphaStd_ = k1_*abs(alpha_);
-        dsStd_ = k2_*abs(ds_);
-        dthetaMalphaStd_ = k1_*abs(dthetaMalpha_);
+        std::normal_distribution<double> eps1_(0.0, k1_*abs(alpha_));
+        std::normal_distribution<double> eps2_(0.0, k2_*abs(ds_));
+        std::normal_distribution<double> eps3_(0.0, k1_*abs(dtheta_ - alpha_));
         
         // resetPrevious(odometry);
-        return moved;
     }
+    return moved;
 }
 
 mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle_t& sample)
@@ -58,5 +58,15 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
     mbot_lcm_msgs::particle_t newSample = sample;
+    // Setup random distributions for each epsilon
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Randomized positions (Action&SensorModel.pdf, Slide 5)
+    newSample.pose = newSample.parent_pose;
+    newSample.pose.x += (ds_ + eps2_(gen)*cos(newSample.pose.theta + alpha_ + eps1_(gen)));
+    newSample.pose.y += (ds_ + eps2_(gen)*sin(newSample.pose.theta + alpha_ + eps1_(gen)));
+    newSample.pose.theta += dtheta_ + eps1_(gen) + eps3_(gen);
+
     return newSample;
 }

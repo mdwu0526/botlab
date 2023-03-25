@@ -65,16 +65,18 @@ private:
     mbot_lcm_msgs::pose_xyt_t previousPose_;
     double alpha_;
     double ds_;
-    double dthetaMalpha_;
+    double dtheta_;
     uint64_t utime_;
 
     bool initialized_;
 
+    std::random_device rd_;
+
     std::mt19937 numberGenerator_;
 
-    float alphaStd_;
-    float dsStd_;
-    float dthetaMalphaStd_;
+    std::normal_distribution<double> eps1_;
+    std::normal_distribution<double> eps2_;
+    std::normal_distribution<double> eps3_;
 };
 
 #endif // SLAM_ACTION_MODEL_HPP
