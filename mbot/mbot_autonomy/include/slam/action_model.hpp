@@ -63,18 +63,18 @@ private:
     double min_theta_;
 
     mbot_lcm_msgs::pose_xyt_t previousPose_;
-    double dx_;
-    double dy_;
-    double dtheta_;
+    double alpha_;
+    double ds_;
+    double dthetaMalpha_;
     uint64_t utime_;
 
     bool initialized_;
 
     std::mt19937 numberGenerator_;
 
-    float xStd_;
-    float yStd_;
-    float thetaStd_;
+    float alphaStd_;
+    float dsStd_;
+    float dthetaMalphaStd_;
 };
 
 #endif // SLAM_ACTION_MODEL_HPP

@@ -24,6 +24,10 @@ void Mapping::updateMap(const mbot_lcm_msgs::lidar_t& scan,
         // if ray range is greater than max laser distance, I think it's a bad reading
         if (ray.range <= kMaxLaserDistance_) {
             scoreEndpoint(ray, map);
+        }
+    }
+    for(auto& ray : movingScan) {
+        if (ray.range <= kMaxLaserDistance_) {
             scoreRay(ray, map);
         }
     }
