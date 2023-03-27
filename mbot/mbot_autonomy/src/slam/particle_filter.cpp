@@ -173,7 +173,27 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
 {
     /////////// TODO: Implement your algorithm for computing the normalized posterior distribution using the
     ///////////       particles in the proposal distribution
-    ParticleList posterior;
+    ParticleList posterior; // initilize new particle set
+    double eta; // initialize the normalization factor
+    
+    for (auto particle : proposal) {
+        // apply sensor model to compute importance weight
+        double weight = sensorModel_.likelihood(particle, laser, map); 
+        
+        // update normalization factor
+        eta += weight; 
+        
+        // add to new particle set
+        mbot_lcm_msgs::particle_t newParticle;
+        newParticle.pose = particle.pose;
+        newParticle.weight = weight;
+        posterior.push_back(newParticle); 
+    }
+    
+    for (auto particle : posterior) {
+        // normalize weight
+        particle.weight /= eta; 
+    }
     return posterior;
 }
 
@@ -182,12 +202,27 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::estimatePosteriorPose(const ParticleLi
 {
     //////// TODO: Implement your method for computing the final pose estimate based on the posterior distribution
     mbot_lcm_msgs::pose_xyt_t pose;
+    mbot_lcm_msgs::particle_t bestParticle;
+    double highestWeight = 0;
+    for (auto particle : posterior) {
+        if (particle.weight > highestWeight) {
+            bestParticle = particle;
+            highestWeight = bestParticle.weight;
+        }
+        pose = bestParticle.pose;
+    }
     return pose;
 }
 
 mbot_lcm_msgs::pose_xyt_t ParticleFilter::computeParticlesAverage(const ParticleList& particles_to_average)
 {
     //////// TODO: Implement your method for computing the average of a pose distribution
+    // whether this should be weighted average?
     mbot_lcm_msgs::pose_xyt_t avg_pose;
+    for (auto particle : particles_to_average) {
+        avg_pose.x += particle.weight * particle.pose.x;
+        avg_pose.y += particle.weight * particle.pose.y;
+        avg_pose.theta += particle.weight * particle.pose.theta;
+    }
     return avg_pose;
 }
