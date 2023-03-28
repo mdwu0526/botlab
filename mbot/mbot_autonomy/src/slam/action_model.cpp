@@ -10,8 +10,8 @@
 
 
 ActionModel::ActionModel(void)
-: k1_(0.01f) // 0.01f
-, k2_(0.01f) // 0.01f
+: k1_(0.1f) // 0.01f
+, k2_(0.1f) // 0.01f
 , min_dist_(0.0025)
 , min_theta_(0.02)
 , initialized_(false)
@@ -42,17 +42,24 @@ bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 
     double ds = sqrt(pow(dx,2) + pow(dy,2)),
            alpha = atan2(dy,dx) - previousPose_.theta;
-    // std::cout << "fabs(dtheta) = "<<dtheta<<", ds = "<<ds<<"\n";
+    
+    // std::cout << "previousPose_.theta = " << previousPose_.theta << ", odometry.theta = " << odometry.theta << "\n";
+    // std::cout << "fabs(dtheta) = " << fabs(dtheta) << ", fabs(ds) = " << fabs(ds) << "\n\n";
     if (fabs(ds) >= min_dist_ || fabs(dtheta) >= min_theta_) {
         moved = 1;
         alpha_ = alpha;
         ds_ = ds;
-        dtheta_ = dtheta_;
+        dtheta_ = dtheta;
         utime_ = odometry.utime;
 
-        std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
-        std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
-        std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
+        // std::cout << "alpha_= " << alpha_ << ", ds_ = " << ds_ << ", dtheta_ = " << dtheta_ << "\n";
+        // std::cout << "k1_ = " << k1_ << "k2_ = " << k2_ << "\n";
+
+        previousPose_ = odometry;
+
+        // std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
+        // std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
+        // std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
     }
     return moved;
 }
@@ -66,12 +73,19 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
     mbot_lcm_msgs::particle_t newSample = sample;
     // Setup random distributions for each epsilon
     std::mt19937 gen(rd_());
+    std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
+    std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
+    std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
+    // std::cout << "eps1_(gen) = " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << "\n";
 
     // Randomized positions (Action&SensorModel.pdf, Slide 5)
     newSample.parent_pose = sample.pose;
     newSample.pose.x = sample.pose.x + (ds_ + eps2_(gen)) * cos(sample.pose.theta + alpha_ + eps1_(gen));
     newSample.pose.y = sample.pose.y + (ds_ + eps2_(gen)) * sin(sample.pose.theta + alpha_ + eps1_(gen));
-    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen);
+    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen),2.0*M_PI;
+
+    // std::cout << "sample.pose = (" << sample.pose.x << ", " << sample.pose.y << ", " << sample.pose.theta << ")\n";
+    // std::cout << "newSample.pose = (" << newSample.pose.x << ", " << newSample.pose.y << ", " << newSample.pose.theta << ")\n\n";
 
     return newSample;
 }

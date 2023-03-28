@@ -103,9 +103,6 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilterActionOnly(const mbot_lcm_
         auto proposal = computeProposalDistribution(prior);
         posterior_ = proposal;
     }
-    else {
-        std::cout << "did not move\n";
-    }
 
     posteriorPose_ = odometry;
 

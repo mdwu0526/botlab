@@ -72,9 +72,9 @@ private:
 
     std::random_device rd_;
 
-    std::normal_distribution<double> eps1_;
-    std::normal_distribution<double> eps2_;
-    std::normal_distribution<double> eps3_;
+    // std::normal_distribution<double> eps1_;
+    // std::normal_distribution<double> eps2_;
+    // std::normal_distribution<double> eps3_;
 };
 
 #endif // SLAM_ACTION_MODEL_HPP
