@@ -29,6 +29,7 @@ ActionModel::ActionModel(void)
 void ActionModel::resetPrevious(const mbot_lcm_msgs::pose_xyt_t& odometry)
 {
     previousPose_ = odometry;
+    utime_ = previousPose_.utime;
 }
 
 
@@ -36,11 +37,11 @@ bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 {
     ////////////// TODO: Implement code here to compute a new distribution of the motion of the robot ////////////////
     bool moved = 0;
-    double dx = odometry.x - previousPose_.x,
+    float dx = odometry.x - previousPose_.x,
            dy = odometry.y - previousPose_.y,
            dtheta = odometry.theta - previousPose_.theta;
-
-    double ds = sqrt(pow(dx,2) + pow(dy,2)),
+    std::cout << "atan2(dy,dx): " << atan2(dy,dx) << std::endl;
+    float ds = sqrt(pow(dx,2) + pow(dy,2)),
            alpha = atan2(dy,dx) - previousPose_.theta;
     
     // std::cout << "previousPose_.theta = " << previousPose_.theta << ", odometry.theta = " << odometry.theta << "\n";
@@ -73,19 +74,24 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
     mbot_lcm_msgs::particle_t newSample = sample;
     // Setup random distributions for each epsilon
     std::mt19937 gen(rd_());
-    std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
-    std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
-    std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
+    std::normal_distribution<float> eps1_(0.0, k1_*fabs(alpha_));
+    std::normal_distribution<float> eps2_(0.0, k2_*fabs(ds_));
+    std::normal_distribution<float> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
     // std::cout << "eps1_(gen) = " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << "\n";
 
     // Randomized positions (Action&SensorModel.pdf, Slide 5)
+    float theta_test = sample.pose.theta;
+    if (fabs(theta_test) > 1000) {
+        theta_test = 0;
+    }
     newSample.parent_pose = sample.pose;
     newSample.pose.x = sample.pose.x + (ds_ + eps2_(gen)) * cos(sample.pose.theta + alpha_ + eps1_(gen));
     newSample.pose.y = sample.pose.y + (ds_ + eps2_(gen)) * sin(sample.pose.theta + alpha_ + eps1_(gen));
-    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen),2.0*M_PI;
+    // newSample.pose.theta = remainder(sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen),2.0*M_PI);
+    newSample.pose.theta = theta_test + dtheta_ + eps1_(gen) + eps3_(gen);
 
-    // std::cout << "sample.pose = (" << sample.pose.x << ", " << sample.pose.y << ", " << sample.pose.theta << ")\n";
-    // std::cout << "newSample.pose = (" << newSample.pose.x << ", " << newSample.pose.y << ", " << newSample.pose.theta << ")\n\n";
+    std::cout << "sample.pose = (" << sample.pose.x << ", " << sample.pose.y << ", " << sample.pose.theta << ")\n";
+    std::cout << "newSample.pose = (" << newSample.pose.x << ", " << newSample.pose.y << ", " << newSample.pose.theta << ")\n\n";
 
     return newSample;
 }

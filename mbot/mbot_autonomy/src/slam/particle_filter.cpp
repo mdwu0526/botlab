@@ -29,6 +29,7 @@ void ParticleFilter::initializeFilterAtPose(const mbot_lcm_msgs::pose_xyt_t& pos
     sample.parent_pose = posteriorPose_;
     sample.pose = pose;
     sample.weight = 1.0/kNumParticles_;
+    std::cout << "InitializeFilterAtPose: " << sample.weight << std::endl;
     while (posterior_.size() < kNumParticles_) {
         posterior_.push_back(sample);
     }
@@ -49,10 +50,9 @@ void ParticleFilter::initializeFilterRandomly(const OccupancyGrid& map)
     pose.x = 0; pose.y = 0; pose.theta = 0;
     posteriorPose_ = pose;
     actionModel_.resetPrevious(posteriorPose_);
-
-
     sample.parent_pose = posteriorPose_;
     sample.weight = 1.0/kNumParticles_;
+    std::cout << "InitializeFilterRandomly: " << sample.weight << std::endl;
     Point<double> global_point; // initialize variables for checking map
     Point<int> map_point;
     int score;
@@ -96,7 +96,9 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilterActionOnly(const mbot_lcm_
     // Only update the particles if motion was detected. If the robot didn't move, then
     // obviously don't do anything.
     bool hasRobotMoved = actionModel_.updateAction(odometry);
-
+    std::cout << "posterior_.size = " << posterior_.size() << "\n";
+    std::cout << "first posterior x = : " << posterior_[0].pose.x << ", first posterior y = : " << posterior_[0].pose.y << ", first posterior theta = : " << posterior_[0].pose.theta << std::endl;
+    
     if(hasRobotMoved)
     {
         auto prior = resamplePosteriorDistribution();
@@ -134,17 +136,21 @@ ParticleList ParticleFilter::resamplePosteriorDistribution(const OccupancyGrid* 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> d(0.0, 1.0 / kNumParticles_);
-    double r = d(gen);
+    const double r = d(gen);  // std::cout << "r = " << r << "\n";
     double U = 0.0;
     double c = posterior_[0].weight;
+    // std::cout << "Posterior_[0].weight = " << posterior_[0].weight << std::endl;
     int i = 0;
 
     for (int m=1; m<=kNumParticles_; m++) {
         U = r + (m-1.0) / kNumParticles_;
+        std::cout << "U: " << U << std::endl;
         while (U > c) {
             i += 1;
             c += posterior_[i].weight;
+            // std::cout << "C: " << c << std::endl;
         }
+        // std::cout << "posterior x = : " << posterior_[i].pose.x << ", posterior y = : " << posterior_[i].pose.y << ", posterior theta = : " << posterior_[i].pose.theta << std::endl;
         prior.push_back(posterior_[i]);
     }
     return prior;
@@ -156,6 +162,7 @@ ParticleList ParticleFilter::computeProposalDistribution(const ParticleList& pri
     //////////// TODO: Implement your algorithm for creating the proposal distribution by sampling from the ActionModel
     ParticleList proposal;
     for (auto particle : prior) {
+        std::cout << "proposal particle pose = " << particle.pose.x << ", " << particle.pose.y << ", " << particle.pose.theta << "\n";
         proposal.push_back(actionModel_.applyAction(particle));
     }
     // actionModel_.resetPrevious(posteriorPose_); Not sure where to do this...

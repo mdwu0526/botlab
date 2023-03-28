@@ -63,9 +63,9 @@ private:
     double min_theta_;
 
     mbot_lcm_msgs::pose_xyt_t previousPose_;
-    double alpha_;
-    double ds_;
-    double dtheta_;
+    float alpha_;
+    float ds_;
+    float dtheta_;
     uint64_t utime_;
 
     bool initialized_;
