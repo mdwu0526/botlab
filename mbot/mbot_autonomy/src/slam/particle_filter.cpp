@@ -3,6 +3,7 @@
 #include <slam/occupancy_grid.hpp>
 #include <mbot_lcm_msgs/pose_xyt_t.hpp>
 #include <mbot_lcm_msgs/particle_t.hpp>
+#include <common_utils/geometric/angle_functions.hpp>
 #include <cassert>
 
 #include <utils/grid_utils.hpp>
@@ -23,15 +24,16 @@ ParticleFilter::ParticleFilter(int numParticles)
 void ParticleFilter::initializeFilterAtPose(const mbot_lcm_msgs::pose_xyt_t& pose)
 {
     ///////////// TODO: Implement your method for initializing the particles in the particle filter /////////////////
+    double sampleWeight = 1.0 / kNumParticles_;
     posteriorPose_ = pose;
-    actionModel_.resetPrevious(posteriorPose_);
-    mbot_lcm_msgs::particle_t sample; // make a sample, assigning its parent_pose and pose, push it kNumParticles_ times
-    sample.parent_pose = posteriorPose_;
-    sample.pose = pose;
-    sample.weight = 1.0/kNumParticles_;
-    std::cout << "InitializeFilterAtPose: " << sample.weight << std::endl;
-    while (posterior_.size() < kNumParticles_) {
-        posterior_.push_back(sample);
+
+    for(auto& particle : posterior_) {
+        particle.pose.x = posteriorPose_.x;
+        particle.pose.y = posteriorPose_.y;
+        particle.pose.theta = wrap_to_pi(posteriorPose_.theta);
+        particle.pose.utime = pose.utime;
+        particle.parent_pose = particle.pose;
+        particle.weight = sampleWeight;
     }
 }
 
@@ -81,13 +83,15 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilter(const mbot_lcm_msgs::pose
 {
     bool hasRobotMoved = actionModel_.updateAction(odometry);
 
-    auto prior = resamplePosteriorDistribution(&map);
-    auto proposal = computeProposalDistribution(prior);
-    posterior_ = computeNormalizedPosterior(proposal, laser, map);
-    // OPTIONAL TODO: Add reinvigoration step
-    posteriorPose_ = estimatePosteriorPose(posterior_);
+    if(hasRobotMoved)
+    {
+        auto prior = resamplePosteriorDistribution(&map); // is map needed here? Not in Gaskell's example
+        auto proposal = computeProposalDistribution(prior);
+        posterior_ = computeNormalizedPosterior(proposal, laser, map);
+        // OPTIONAL TODO: Add reinvigoration step
+        posteriorPose_ = estimatePosteriorPose(posterior_);
+    }
     posteriorPose_.utime = odometry.utime;
-
     return posteriorPose_;
 }
 
@@ -96,8 +100,8 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilterActionOnly(const mbot_lcm_
     // Only update the particles if motion was detected. If the robot didn't move, then
     // obviously don't do anything.
     bool hasRobotMoved = actionModel_.updateAction(odometry);
-    std::cout << "posterior_.size = " << posterior_.size() << "\n";
-    std::cout << "first posterior x = : " << posterior_[0].pose.x << ", first posterior y = : " << posterior_[0].pose.y << ", first posterior theta = : " << posterior_[0].pose.theta << std::endl;
+    // std::cout << "posterior_.size = " << posterior_.size() << "\n";
+    // std::cout << "first posterior x = : " << posterior_[0].pose.x << ", first posterior y = : " << posterior_[0].pose.y << ", first posterior theta = : " << posterior_[0].pose.theta << std::endl;
     
     if(hasRobotMoved)
     {
@@ -161,12 +165,10 @@ ParticleList ParticleFilter::computeProposalDistribution(const ParticleList& pri
 {
     //////////// TODO: Implement your algorithm for creating the proposal distribution by sampling from the ActionModel
     ParticleList proposal;
-    for (auto particle : prior) {
-        std::cout << "proposal particle pose = " << particle.pose.x << ", " << particle.pose.y << ", " << particle.pose.theta << "\n";
+    for (auto& particle : prior) {
+        // std::cout << "proposal particle pose = " << particle.pose.x << ", " << particle.pose.y << ", " << particle.pose.theta << "\n";
         proposal.push_back(actionModel_.applyAction(particle));
     }
-    // actionModel_.resetPrevious(posteriorPose_); Not sure where to do this...
-    
     return proposal;
 }
 
