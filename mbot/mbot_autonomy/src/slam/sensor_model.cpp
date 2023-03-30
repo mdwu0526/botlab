@@ -17,13 +17,18 @@ double SensorModel::likelihood(const mbot_lcm_msgs::particle_t& sample,
     MovingLaserScan movingScan(scan, sample.parent_pose, sample.pose, ray_stride_);
     // TODO
     for(const auto &ray : movingScan){
-        likelihood += scoreRay(ray,map);
+        // likelihood += scoreRay(ray,map);
+        likelihood += 1; // Peter's implementation
     }
     return likelihood;
 }
 
 double SensorModel::scoreRay(const adjusted_ray_t& ray, const OccupancyGrid& map){
     double score = 0.000001;
+
+    // Alternative Implementation to SensorModel Score Ray
+    // Take a max value of all the logOdds adjacent to the cell end position
+
     double cell_length = map.metersPerCell();
     double cell_diagonal = sqrt(pow(cell_length,2)+pow(cell_length,2));
 
