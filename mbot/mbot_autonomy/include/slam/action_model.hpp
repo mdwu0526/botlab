@@ -63,14 +63,27 @@ private:
     double min_theta_;
 
     mbot_lcm_msgs::pose_xyt_t previousPose_;
-    double alpha_;
-    double ds_;
-    double dtheta_;
+
+    double rot1_;
+    double trans_;
+    double rot2_;
+    bool moved_;
+    bool initialized_;
     uint64_t utime_;
 
-    bool initialized_;
+    double rot1Std_;
+    double transStd_;
+    double rot2Std_;
 
-    std::random_device rd_;
+    std::mt19937 numberGenerator_;
+
+    // float alpha_;
+    // float ds_;
+    // float dtheta_;
+    // uint64_t utime_;
+    // bool initialized_;
+
+    // std::random_device rd_;
 
     // std::normal_distribution<double> eps1_;
     // std::normal_distribution<double> eps2_;

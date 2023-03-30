@@ -10,58 +10,61 @@
 
 
 ActionModel::ActionModel(void)
-: k1_(0.1f) // 0.01f
-, k2_(0.1f) // 0.01f
+: k1_(0.01f) // 0.01f
+, k2_(0.01f) // 0.01f
 , min_dist_(0.0025)
 , min_theta_(0.02)
 , initialized_(false)
 {
     //////////////// TODO: Handle any initialization for your ActionModel /////////////////////////
-    initialized_ = true;
-    alpha_ = 0.0;
-    ds_ = 0.0;
-    dtheta_ = 0.0;
-    utime_ = 0;
-    previousPose_.x = 0; previousPose_.y = 0; previousPose_.theta = 0;
+    std::random_device rd;
+    numberGenerator_ = std::mt19937(rd());
 }
 
 
 void ActionModel::resetPrevious(const mbot_lcm_msgs::pose_xyt_t& odometry)
 {
     previousPose_ = odometry;
+    utime_ = previousPose_.utime;
 }
 
 
 bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 {
     ////////////// TODO: Implement code here to compute a new distribution of the motion of the robot ////////////////
-    bool moved = 0;
-    double dx = odometry.x - previousPose_.x,
-           dy = odometry.y - previousPose_.y,
-           dtheta = odometry.theta - previousPose_.theta;
-
-    double ds = sqrt(pow(dx,2) + pow(dy,2)),
-           alpha = atan2(dy,dx) - previousPose_.theta;
-    
-    // std::cout << "previousPose_.theta = " << previousPose_.theta << ", odometry.theta = " << odometry.theta << "\n";
-    // std::cout << "fabs(dtheta) = " << fabs(dtheta) << ", fabs(ds) = " << fabs(ds) << "\n\n";
-    if (fabs(ds) >= min_dist_ || fabs(dtheta) >= min_theta_) {
-        moved = 1;
-        alpha_ = alpha;
-        ds_ = ds;
-        dtheta_ = dtheta;
-        utime_ = odometry.utime;
-
-        // std::cout << "alpha_= " << alpha_ << ", ds_ = " << ds_ << ", dtheta_ = " << dtheta_ << "\n";
-        // std::cout << "k1_ = " << k1_ << "k2_ = " << k2_ << "\n";
-
+    if(!initialized_) {
         previousPose_ = odometry;
-
-        // std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
-        // std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
-        // std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
+        initialized_ = true;
     }
-    return moved;
+
+    float deltaX = odometry.x - previousPose_.x;
+    float deltaY = odometry.y - previousPose_.y;
+    float deltaTheta = odometry.theta - previousPose_.theta;
+    float direction = 1.0;
+    
+    trans_ = std::sqrt(deltaX*deltaX + deltaY*deltaY);
+    rot1_ = angle_diff(std::atan2(deltaY, deltaX), previousPose_.theta);
+
+    // Fix for if robot moves backwards
+    if(std::abs(rot1_) > M_PI/2.0) {
+        rot1_ = angle_diff(M_PI, rot1_);
+        direction = -1.0;
+    }
+
+    rot2_ = angle_diff(deltaTheta, rot1_);
+
+    moved_ = (trans_ >= min_dist_ || deltaTheta >= min_theta_);
+    
+    if(moved_) {
+        rot1Std_ = std::sqrt(k1_ * std::abs(rot1_));
+        transStd_ = std::sqrt(k2_ * std::abs(trans_));
+        rot2Std_ = std::sqrt(k1_ * std::abs(rot2_));
+    }
+    
+    trans_ *= direction;
+    previousPose_ = odometry;
+    utime_ = odometry.utime;
+    return moved_;
 }
 
 mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle_t& sample)
@@ -69,23 +72,16 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
     ////////////// TODO: Implement your code for sampling new poses from the distribution computed in updateAction //////////////////////
     // Make sure you create a new valid particle_t. Don't forget to set the new time and new parent_pose.
 
-    // Sam's Notes: sample here is the parent sample...
     mbot_lcm_msgs::particle_t newSample = sample;
-    // Setup random distributions for each epsilon
-    std::mt19937 gen(rd_());
-    std::normal_distribution<double> eps1_(0.0, k1_*fabs(alpha_));
-    std::normal_distribution<double> eps2_(0.0, k2_*fabs(ds_));
-    std::normal_distribution<double> eps3_(0.0, k1_*fabs(dtheta_ - alpha_));
-    // std::cout << "eps1_(gen) = " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << eps1_(gen) << ", " << "\n";
 
-    // Randomized positions (Action&SensorModel.pdf, Slide 5)
+    float sampledRot1 = std::normal_distribution<>(rot1_, rot1Std_)(numberGenerator_);
+    float sampledTrans = std::normal_distribution<>(trans_, transStd_)(numberGenerator_);
+    float sampledRot2 = std::normal_distribution<>(rot2_, rot2Std_)(numberGenerator_);
+
+    newSample.pose.x += sampledTrans * cos(sample.pose.theta + sampledRot1);
+    newSample.pose.y += sampledTrans * sin(sample.pose.theta + sampledRot1);
+    newSample.pose.theta = wrap_to_pi(sample.pose.theta + sampledRot1 + sampledRot2);
+    newSample.pose.utime = utime_;
     newSample.parent_pose = sample.pose;
-    newSample.pose.x = sample.pose.x + (ds_ + eps2_(gen)) * cos(sample.pose.theta + alpha_ + eps1_(gen));
-    newSample.pose.y = sample.pose.y + (ds_ + eps2_(gen)) * sin(sample.pose.theta + alpha_ + eps1_(gen));
-    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen);
-
-    // std::cout << "sample.pose = (" << sample.pose.x << ", " << sample.pose.y << ", " << sample.pose.theta << ")\n";
-    // std::cout << "newSample.pose = (" << newSample.pose.x << ", " << newSample.pose.y << ", " << newSample.pose.theta << ")\n\n";
-
     return newSample;
 }
