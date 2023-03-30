@@ -23,7 +23,7 @@ double SensorModel::likelihood(const mbot_lcm_msgs::particle_t& sample,
 }
 
 double SensorModel::scoreRay(const adjusted_ray_t& ray, const OccupancyGrid& map){
-    double score = 0.0;
+    double score = 0.0001; // Initialize a small score at first
     double cell_length = map.metersPerCell();
     double cell_diagonal = sqrt(pow(cell_length,2)+pow(cell_length,2));
 
