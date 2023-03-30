@@ -79,8 +79,5 @@ double SensorModel::scoreRay(const adjusted_ray_t& ray, const OccupancyGrid& map
         }
     }
 
-    // Normalize score
-
-
     return score;
 }

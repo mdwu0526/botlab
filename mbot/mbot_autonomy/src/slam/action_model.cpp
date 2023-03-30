@@ -82,7 +82,7 @@ mbot_lcm_msgs::particle_t ActionModel::applyAction(const mbot_lcm_msgs::particle
     newSample.parent_pose = sample.pose;
     newSample.pose.x = sample.pose.x + (ds_ + eps2_(gen)) * cos(sample.pose.theta + alpha_ + eps1_(gen));
     newSample.pose.y = sample.pose.y + (ds_ + eps2_(gen)) * sin(sample.pose.theta + alpha_ + eps1_(gen));
-    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen),2.0*M_PI;
+    newSample.pose.theta = sample.pose.theta + dtheta_ + eps1_(gen) + eps3_(gen);
 
     // std::cout << "sample.pose = (" << sample.pose.x << ", " << sample.pose.y << ", " << sample.pose.theta << ")\n";
     // std::cout << "newSample.pose = (" << newSample.pose.x << ", " << newSample.pose.y << ", " << newSample.pose.theta << ")\n\n";

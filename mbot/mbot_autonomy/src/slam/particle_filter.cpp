@@ -159,7 +159,6 @@ ParticleList ParticleFilter::computeProposalDistribution(const ParticleList& pri
         proposal.push_back(actionModel_.applyAction(particle));
     }
     // actionModel_.resetPrevious(posteriorPose_); Not sure where to do this...
-    
     return proposal;
 }
 

@@ -12,7 +12,23 @@ ObstacleDistanceGrid::ObstacleDistanceGrid(void)
 
 void ObstacleDistanceGrid::initializeDistances(const OccupancyGrid& map)
 {
-    //////////// TODO: initialize the dstances for the obstacle distance grid 
+    //////////// TODO: initialize the dstances for the obstacle distance grid
+    int width = map.widthInCells();
+    int height = map.heightInCells();
+
+    for(int y = 0; y < height; y++){
+        for(int x = 0; x < width; x++){
+            // Cell is free if logOdds is < 0
+            if(map.logOdds(x,y) < 0){
+                distance(x,y) = -1;
+            }
+            else{
+                distance(x,y) = 0;
+            }
+        }
+    }
+
+
     return;
 }
 
@@ -67,12 +83,47 @@ void enqueue_obstacle_cells(const OccupancyGrid& map,
                                 std::priority_queue<DistanceNode>& search_queue)
 {
     ///////// TODO: Implement the method for enqueing neighboring cells
+    int width = grid.widthInCells();
+    int height = grid.heightInCells();
+    cell_t cell;
+
+    // If neighboring cells are not an obstacle, add it to the priority queue
+    for(cell.y = 0; cell.y < height; cell.y++){
+        for(cell.x = 0; cell.x < width; cell.x++){
+            if(grid.operator()(cell.x,cell.y) == 0){
+                expand_node(DistanceNode(cell,0), grid, search_queue);
+            }
+        }
+    }
     return;
 }
 
 void expand_node(const DistanceNode& node, ObstacleDistanceGrid& grid, std::priority_queue<DistanceNode>& search_queue)
 {
     // TODO: Expand to neighboring nodes
+    const int xDeltas[8] = {1, 1, 1, 0, 0, -1, -1, -1};
+    const int yDeltas[8] = {0, 1, -1, -1, 1, 1, -1, 0};
+    
+    for(int i = 0; i < 8; i++){
+        // Made a new node that is adjacent to the selected node
+        cell_t adjacentCell(node.cell.x + xDeltas[i], node.cell.y + yDeltas[i]);
+        if(grid.isCellInGrid(adjacentCell.x, adjacentCell.y)){
+            if(grid(adjacentCell.x, adjacentCell.y) == -1){
+                DistanceNode adjacentNode(adjacentCell, node.distance);
+                // If it is a corner adjacent node, add 1.4
+                if(abs(xDeltas[i]) + abs(yDeltas[i]) > 1){
+                    adjacentNode.distance += 1;
+                }
+                // If it is a regular adjacent node, just add 1
+                else{
+                    adjacentNode.distance += 1.4;
+                }
+                grid(adjacentCell.x, adjacentCell.y) = adjacentNode.distance * grid.metersPerCell();
+                search_queue.push(adjacentNode);
+            }
+        }
+    }
+    
 }
 
 bool is_cell_free(cell_t cell, const OccupancyGrid& map)

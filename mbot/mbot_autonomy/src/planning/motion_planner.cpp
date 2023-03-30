@@ -91,7 +91,7 @@ bool MotionPlanner::isPathSafe(const mbot_lcm_msgs::robot_path_t& path) const
 {
 
     ///////////// TODO: Implement your test for a safe path here //////////////////
-
+    
     return true;
 }
 
