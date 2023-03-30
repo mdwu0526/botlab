@@ -27,7 +27,7 @@ void ParticleFilter::initializeFilterAtPose(const mbot_lcm_msgs::pose_xyt_t& pos
     double sampleWeight = 1.0 / kNumParticles_;
     posteriorPose_ = pose;
 
-    for(auto& particle : posterior_) {
+    for (auto& particle : posterior_) {
         particle.pose.x = posteriorPose_.x;
         particle.pose.y = posteriorPose_.y;
         particle.pose.theta = wrap_to_pi(posteriorPose_.theta);
@@ -46,29 +46,49 @@ void ParticleFilter::initializeFilterRandomly(const OccupancyGrid& map)
     double mean = 0.0, stddev = 1.0;
     std::normal_distribution<double> d(mean, stddev);
 
-    // sample stuff
-    mbot_lcm_msgs::particle_t sample; // make a sample, assigning its parent_pose and pose, push it kNumParticles_ times
-    mbot_lcm_msgs::pose_xyt_t pose; // make a pose, set it to 0, assign it to sample.parent_pose
-    pose.x = 0; pose.y = 0; pose.theta = 0;
-    posteriorPose_ = pose;
-    actionModel_.resetPrevious(posteriorPose_);
-    sample.parent_pose = posteriorPose_;
-    sample.weight = 1.0/kNumParticles_;
-    std::cout << "InitializeFilterRandomly: " << sample.weight << std::endl;
+    double sampleWeight = 1.0 / kNumParticles_;
     Point<double> global_point; // initialize variables for checking map
     Point<int> map_point;
-    int score;
-
-    while (posterior_.size() < kNumParticles_) {
-        global_point.x = d(gen); global_point.y = d(gen); // generate random x, y
-        map_point = global_position_to_grid_cell(global_point, map); // get grid cell position
-        score = map.logOdds(map_point.x, map_point.y); // check the score
-
-        if (score < 0) { // if the score is less than 0, then it's unoccupied based on laser scan, so we can place robot there (if >= 0, either not in map or occupied)
-            pose.x = global_point.x; pose.y = global_point.y; pose.theta = d(gen)/10; // divide by a number since it's theta
-            posterior_.push_back(sample);
+    int score = -1;
+    
+    for (auto& particle : posterior_) {
+        while (score < 0) {
+            global_point.x = d(gen); global_point.y = d(gen); // generate random x, y
+            map_point = global_position_to_grid_cell(global_point, map); // get grid cell position
+            score = map.logOdds(map_point.x, map_point.y); // check the score
         }
+        particle.pose.x = global_point.x;
+        particle.pose.y = global_point.y;
+        particle.pose.theta = wrap_to_pi(d(gen));
+        particle.pose.utime = posteriorPose_.utime;
+        particle.weight = sampleWeight;
     }
+    
+
+
+    // // sample stuff
+    // mbot_lcm_msgs::particle_t sample; // make a sample, assigning its parent_pose and pose, push it kNumParticles_ times
+    // mbot_lcm_msgs::pose_xyt_t pose; // make a pose, set it to 0, assign it to sample.parent_pose
+    // pose.x = 0; pose.y = 0; pose.theta = 0;
+    // posteriorPose_ = pose;
+    // actionModel_.resetPrevious(posteriorPose_);
+    // sample.parent_pose = posteriorPose_;
+    // sample.weight = 1.0/kNumParticles_;
+    // std::cout << "InitializeFilterRandomly: " << sample.weight << std::endl;
+    // Point<double> global_point; // initialize variables for checking map
+    // Point<int> map_point;
+    // int score;
+
+    // while (posterior_.size() < kNumParticles_) {
+    //     global_point.x = d(gen); global_point.y = d(gen); // generate random x, y
+    //     map_point = global_position_to_grid_cell(global_point, map); // get grid cell position
+    //     score = map.logOdds(map_point.x, map_point.y); // check the score
+
+    //     if (score < 0) { // if the score is less than 0, then it's unoccupied based on laser scan, so we can place robot there (if >= 0, either not in map or occupied)
+    //         pose.x = global_point.x; pose.y = global_point.y; pose.theta = d(gen)/10; // divide by a number since it's theta
+    //         posterior_.push_back(sample);
+    //     }
+    // }
 }
 
 void ParticleFilter::resetOdometry(const mbot_lcm_msgs::pose_xyt_t& odometry)
@@ -182,7 +202,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     ParticleList posterior; // initilize new particle set
     double eta; // initialize the normalization factor
     
-    for (auto particle : proposal) {
+    for (auto& particle : proposal) {
         // apply sensor model to compute importance weight
         double weight = sensorModel_.likelihood(particle, laser, map); 
         
@@ -196,7 +216,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
         posterior.push_back(newParticle); 
     }
     
-    for (auto particle : posterior) {
+    for (auto& particle : posterior) {
         // normalize weight
         particle.weight /= eta; 
     }
