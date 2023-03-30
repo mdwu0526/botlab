@@ -106,14 +106,14 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilter(const mbot_lcm_msgs::pose
 {
     bool hasRobotMoved = actionModel_.updateAction(odometry);
 
-    // if(hasRobotMoved)
-    // {
+    if(hasRobotMoved)
+    {
         auto prior = resamplePosteriorDistribution(&map); // is map needed here? Not in Gaskell's example
         auto proposal = computeProposalDistribution(prior);
         posterior_ = computeNormalizedPosterior(proposal, laser, map);
         // OPTIONAL TODO: Add reinvigoration step
         posteriorPose_ = estimatePosteriorPose(posterior_);
-    // }
+    }
     posteriorPose_.utime = odometry.utime;
     return posteriorPose_;
 }
@@ -209,7 +209,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     for (auto& particle : proposal) {
         // apply sensor model to compute importance weight
         double weight = sensorModel_.likelihood(particle, laser, map);
-        std::cout << "sensorModel_likelihood weight = " << weight << "\n\n";
+        // std::cout << "sensorModel_likelihood weight = " << weight << "\n\n";
 
         // update normalization factor
         eta += weight; 
