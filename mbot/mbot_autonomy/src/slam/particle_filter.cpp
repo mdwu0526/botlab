@@ -103,14 +103,14 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilter(const mbot_lcm_msgs::pose
 {
     bool hasRobotMoved = actionModel_.updateAction(odometry);
 
-    if(hasRobotMoved)
-    {
+    // if(hasRobotMoved)
+    // {
         auto prior = resamplePosteriorDistribution(&map); // is map needed here? Not in Gaskell's example
         auto proposal = computeProposalDistribution(prior);
         posterior_ = computeNormalizedPosterior(proposal, laser, map);
         // OPTIONAL TODO: Add reinvigoration step
         posteriorPose_ = estimatePosteriorPose(posterior_);
-    }
+    // }
     posteriorPose_.utime = odometry.utime;
     return posteriorPose_;
 }
@@ -168,16 +168,17 @@ ParticleList ParticleFilter::resamplePosteriorDistribution(const OccupancyGrid* 
 
     for (int m=1; m<=kNumParticles_; m++) {
         U = r + (m-1.0) / kNumParticles_;
-        std::cout << "U: " << U << std::endl;
+        // std::cout << "U: " << U << std::endl;
         while (U > c) {
             i += 1;
             c += posterior_[i].weight;
             // std::cout << "C: " << c << std::endl;
         }
         // std::cout << "posterior x = : " << posterior_[i].pose.x << ", posterior y = : " << posterior_[i].pose.y << ", posterior theta = : " << posterior_[i].pose.theta << std::endl;
+        // std::cout << "i = " << i << "\n";
         prior.push_back(posterior_[i]);
     }
-    return prior;
+    return prior; // prior;
 }
 
 
@@ -205,7 +206,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     for (auto& particle : proposal) {
         // apply sensor model to compute importance weight
         double weight = sensorModel_.likelihood(particle, laser, map); 
-        
+
         // update normalization factor
         eta += weight; 
         
@@ -216,10 +217,14 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
         posterior.push_back(newParticle); 
     }
     
+    // double sum_of_weights = 0.0;
     for (auto& particle : posterior) {
         // normalize weight
-        particle.weight /= eta; 
+        particle.weight /= eta;
+        sum_of_weights += particle.weight;
+        // std::cout << "weight = " << particle.weight << "\n";
     }
+    // std::cout << "sum_of_weights = " << sum_of_weights << "\n";
     return posterior;
 }
 
@@ -235,8 +240,10 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::estimatePosteriorPose(const ParticleLi
             bestParticle = particle;
             highestWeight = bestParticle.weight;
         }
-        pose = bestParticle.pose;
     }
+    std::cout << "highestWeight = " << highestWeight << "\n";
+    std::cout << "bestParticle.pose = " << bestParticle.pose.x << ", " << bestParticle.pose.y << ", " << bestParticle.pose.theta << " .\n";
+    pose = bestParticle.pose;
     return pose;
 }
 
