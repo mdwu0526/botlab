@@ -209,7 +209,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     for (auto& particle : proposal) {
         // apply sensor model to compute importance weight
         double weight = sensorModel_.likelihood(particle, laser, map);
-        std::cout << "sensorModel_likelihood = " << weight << "\n\n";
+        // std::cout << "sensorModel_likelihood = " << weight << "\n\n";
 
         // update normalization factor
         eta += weight; 
@@ -224,7 +224,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     for (auto& particle : posterior) {
         // normalize weight
         particle.weight /= eta; 
-        std::cout << "weight = " << particle.weight << "\n";
+        // std::cout << "weight = " << particle.weight << "\n";
     }
     return posterior;
 }
@@ -247,9 +247,9 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::estimatePosteriorPose(const ParticleLi
     
     ParticleList posterior_sorted = posterior;
     std::sort(posterior_sorted.begin(), posterior_sorted.end(), comparePose);
-    posterior_sorted.resize(10);
+    posterior_sorted.resize(50);
     bestPose = computeParticlesAverage(posterior_sorted);
-    std::cout << "bestPose = " << bestPose.x << ", " << bestPose.y << ", " << bestPose.theta << " \n";
+    // std::cout << "bestPose = " << bestPose.x << ", " << bestPose.y << ", " << bestPose.theta << " \n";
     // for (int i = 0; i < 10; i++) {
     //     std::cout << "posterior_sorted[" << i << "].weight = " << posterior_sorted[i].weight << "\n";
     // }
@@ -274,8 +274,8 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::computeParticlesAverage(const Particle
         yAvg += particle.weight * particle.pose.y;
         cosThetaAvg += particle.weight * std::cos(particle.pose.theta);
         sinThetaAvg += particle.weight * std::sin(particle.pose.theta);
-        std::cout << "particle.pose = " << particle.pose.x << ", " << particle.pose.y << ", " << particle.pose.theta << ", Particle weight = " << particle.weight << "\n";
-        std::cout << "xAvg = " << xAvg << ", yAvg = " << yAvg << ", cosThetaAvg = " << cosThetaAvg << ", sinThetaAvg = " << sinThetaAvg << "\n"; 
+        // std::cout << "particle.pose = " << particle.pose.x << ", " << particle.pose.y << ", " << particle.pose.theta << ", Particle weight = " << particle.weight << "\n";
+        // std::cout << "xAvg = " << xAvg << ", yAvg = " << yAvg << ", cosThetaAvg = " << cosThetaAvg << ", sinThetaAvg = " << sinThetaAvg << "\n"; 
     }
     xAvg /= sum_of_weights;
     yAvg /= sum_of_weights;
@@ -283,6 +283,6 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::computeParticlesAverage(const Particle
     sinThetaAvg /= sum_of_weights;
     avg_pose.x = xAvg;
     avg_pose.y = yAvg;
-    avg_pose.theta = std::atan2(sinThetaAvg, cosThetaAvg)/10; 
+    avg_pose.theta = std::atan2(sinThetaAvg, cosThetaAvg); 
     return avg_pose;
 }

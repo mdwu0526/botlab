@@ -35,8 +35,8 @@ OccupancyGridSLAM::OccupancyGridSLAM(int numParticles,
 , lcm_(lcmComm)
 , mapUpdateCount_(0)
 , randomInitialPos_(randomInitialPos)
-, odomResetThreshDist_(0.05)
-, odomResetThreshAng_(0.08)  // ~5 degrees.
+, odomResetThreshDist_(4.0)
+, odomResetThreshAng_(4.0)  // ~5 degrees.
 , mapFile_(mapFile)
 , initialPose_(initialPose)
 {
