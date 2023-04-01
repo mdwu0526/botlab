@@ -61,7 +61,7 @@ bool OccupancyGrid::isCellInGrid(int x, int y) const
 CellOdds OccupancyGrid::logOdds(int x, int y) const
 {
     if(isCellInGrid(x, y))
-    {
+    {   
         return operator()(x, y);
     }
     

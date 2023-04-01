@@ -45,7 +45,7 @@ fi
 
 [ ! -d "build" ] && mkdir build
 cd build
-cmake $CMAKE_FLAGS .. && make
+cmake $CMAKE_FLAGS .. && make -j4
 cd $ROOT_DIR
 
 if $PACKAGE_SYSTEM ; then

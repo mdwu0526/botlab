@@ -209,7 +209,7 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     for (auto& particle : proposal) {
         // apply sensor model to compute importance weight
         double weight = sensorModel_.likelihood(particle, laser, map);
-        // std::cout << "sensorModel_likelihood weight = " << weight << "\n\n";
+        std::cout << "sensorModel_likelihood = " << weight << "\n\n";
 
         // update normalization factor
         eta += weight; 
@@ -223,7 +223,8 @@ ParticleList ParticleFilter::computeNormalizedPosterior(const ParticleList& prop
     
     for (auto& particle : posterior) {
         // normalize weight
-        particle.weight /= eta; // std::cout << "weight = " << particle.weight << "\n";
+        particle.weight /= eta; 
+        std::cout << "weight = " << particle.weight << "\n";
     }
     return posterior;
 }
