@@ -116,7 +116,9 @@ void expand_node(const DistanceNode& node, ObstacleDistanceGrid& grid, std::prio
                 }
                 // If it is a regular adjacent node, just add 1
                 else{
-                    adjacentNode.distance += 1.4;
+                    // If diagonal distance is determined
+                    // adjacentNode.distance += 1.4;
+                    adjacentNode.distance += 1;
                 }
                 grid(adjacentCell.x, adjacentCell.y) = adjacentNode.distance * grid.metersPerCell();
                 search_queue.push(adjacentNode);
