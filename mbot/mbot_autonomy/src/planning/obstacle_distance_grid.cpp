@@ -18,10 +18,11 @@ void ObstacleDistanceGrid::initializeDistances(const OccupancyGrid& map)
 
     for(int y = 0; y < height; y++){
         for(int x = 0; x < width; x++){
-            // Cell is free if logOdds is < 0
+            // Cell is free 
             if(map.logOdds(x,y) < 0){
                 distance(x,y) = -1;
             }
+            // Cell is occupied
             else{
                 distance(x,y) = 0;
             }
@@ -117,7 +118,7 @@ void expand_node(const DistanceNode& node, ObstacleDistanceGrid& grid, std::prio
                 // If it is a regular adjacent node, just add 1
                 else{
                     // If diagonal distance is determined
-                    // adjacentNode.distance += 1.4;
+                    // adjacentNode.distance += 1.4142;
                     adjacentNode.distance += 1;
                 }
                 grid(adjacentCell.x, adjacentCell.y) = adjacentNode.distance * grid.metersPerCell();
