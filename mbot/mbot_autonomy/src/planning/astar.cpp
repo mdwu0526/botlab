@@ -40,6 +40,8 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
         
         for (auto& kid : kids) {
             // calculate f cost for kid: f_cost = h_cost + g_cost
+            kid->h_cost = h_cost(kid, &goalNode, distances);
+            kid->g_cost = g_cost(kid, &goalNode, distances, params);
             kid->f_cost();
             // if this kid reaches the goal >>> return the path
             if (*kid == goalNode)
@@ -77,7 +79,7 @@ double g_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances, con
 {
     // TODO: Return calculated g cost
     double g_cost = 0;   
-
+    
     return g_cost;
 }
 
@@ -93,10 +95,17 @@ std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances
     for(int i = 0; i < 8; i++){
         // Made a new node that is adjacent to the selected node
         cell_t adjacentCell(node->cell.x + xDeltas[i], node->cell.y + yDeltas[i]);
+        // if it is in the distance grid
         if(distances.isCellInGrid(adjacentCell.x, adjacentCell.y)){
-            if(distances(adjacentCell.x, adjacentCell.y) != 0){
-                adjacentNode = 
-                children.push();
+            // if there is no collision
+            if(distances(adjacentCell.x, adjacentCell.y) > params.minDistanceToObstacle){
+                // add node to children and set parent node, h cost and g cost are calculated seperately
+                // Node* adjacentNode = new Node(adjacentCell.x, adjacentCell.y);
+                // adjacentNode->parent = node;
+                // children.push_back(adjacentNode); 
+                Node adjacentNode(adjacentCell.x, adjacentCell.y);
+                adjacentNode.parent = node;
+                children.push_back(&adjacentNode); //local variable, maybe point to null pointer?
             }
         }
     }

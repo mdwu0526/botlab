@@ -161,7 +161,7 @@ int main(int argc, const char * argv[]) {
     // fetch result and print it out...
     while (1) {
 
-        rplidar_response_measurement_node_hq_t nodes[360*2];
+        rplidar_response_measurement_node_hq_t nodes[8192];
         size_t   count = _countof(nodes);
 
         op_result = drv->grabScanDataHq(nodes, count);
@@ -185,7 +185,7 @@ int main(int argc, const char * argv[]) {
                 now = utime_now();//(int64_t) tv.tv_sec * 1000000 + tv.tv_usec; //get current timestamp in milliseconds
             	int scan_idx = (int)count - pos - 1;
                 newLidar.ranges[pos] = nodes[scan_idx].dist_mm_q2/4000.0f;
-            	newLidar.thetas[pos] = 2*PI - (nodes[scan_idx].angle_z_q14 >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)*PI/11520.0f;
+            	newLidar.thetas[pos] = nodes[scan_idx].angle_z_q14 * (PI / 32768.0); // use updated angle formula, change to CW positive to m,atch old logs //newLidar.thetas[pos] = 2*PI - (nodes[scan_idx].angle_z_q14 >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)*PI/11520.0f;
             	newLidar.intensities[pos] = nodes[scan_idx].quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT;
             	newLidar.times[pos] = now;
             }
