@@ -41,10 +41,10 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
         for (auto& kid : kids) {
             // calculate f cost for kid: f_cost = h_cost + g_cost
             kid->h_cost = h_cost(kid, &goalNode, distances);
-            kid->g_cost = g_cost(kid, &goalNode, distances, params);
+            kid->g_cost = g_cost(n, kid, distances, params);
             kid->f_cost();
             // if this kid reaches the goal >>> return the path
-            if (*kid == goalNode)
+            if (*kid == goalNode) // might use: kid->cell == goalCell
             {
                 std::vector<Node *> nodes = extract_node_path(&goalNode, &startNode);
                 path.path = extract_pose_path(nodes, distances);
@@ -75,10 +75,25 @@ double h_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances)
     h_cost = (dx + dy) + (1.4142 - 2) * std::min(dx, dy);
     return h_cost;
 }
-double g_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances, const SearchParams& params)
+double g_cost(Node* from, Node* to, const ObstacleDistanceGrid& distances, const SearchParams& params)
 {
     // TODO: Return calculated g cost
-    double g_cost = 0;   
+    double g_cost = 0;   // TODO: go diagnal is set to 1 in obstacle_distance_grid.cpp, check whether it is correct
+    
+    // if goal node is far enough from wall
+    if (distances(to->cell.x, to->cell.y) >= params.maxDistanceWithCost) {
+        g_cost = from->g_cost + 1;
+    }
+    // if goal node is close to wall
+    else {
+        // self-defined linear penalty equation, higher penalty when closer to wall
+        double g_penalty_max = 100; // modifiable, need to be choose
+        double k = - g_penalty_max/params.maxDistanceWithCost;
+        double d_distance  = distances(to->cell.x, to->cell.y) - distances(from->cell.x, from->cell.y);
+        double g_penalty =k * d_distance;
+        // current g cost = privious g cost + penalty g cost
+        g_cost = from->g_cost + g_penalty;
+    }
     
     return g_cost;
 }
@@ -98,14 +113,14 @@ std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances
         // if it is in the distance grid
         if(distances.isCellInGrid(adjacentCell.x, adjacentCell.y)){
             // if there is no collision
-            if(distances(adjacentCell.x, adjacentCell.y) > params.minDistanceToObstacle){
+            if(distances(adjacentCell.x, adjacentCell.y) > params.minDistanceToObstacle){ // TODO: convert grid to meters
                 // add node to children and set parent node, h cost and g cost are calculated seperately
                 // Node* adjacentNode = new Node(adjacentCell.x, adjacentCell.y);
                 // adjacentNode->parent = node;
                 // children.push_back(adjacentNode); 
                 Node adjacentNode(adjacentCell.x, adjacentCell.y);
                 adjacentNode.parent = node;
-                children.push_back(&adjacentNode); //local variable, maybe point to null pointer?
+                children.push_back(&adjacentNode); //TODO: check, here pushing local variable, maybe point to null pointer?
             }
         }
     }
@@ -116,6 +131,12 @@ std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node)
 {
     // TODO: Generate path by following parent nodes
     std::vector<Node*> path;
+    Node* current_node = goal_node;
+    while (!(*current_node == *start_node)) {
+        path.push_back(current_node);
+        current_node = current_node->parent;
+    }
+    path.push_back(start_node);
     return path;
 }
 
