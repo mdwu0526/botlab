@@ -53,7 +53,7 @@ bool ActionModel::updateAction(const mbot_lcm_msgs::pose_xyt_t& odometry)
 
     rot2_ = angle_diff(deltaTheta, rot1_);
 
-    moved_ = (trans_ >= min_dist_ || deltaTheta >= min_theta_);
+    moved_ = (trans_ >= min_dist_ || std::fabs(deltaTheta) >= min_theta_);
     
     if(moved_) {
         rot1Std_ = std::sqrt(k1_ * std::abs(rot1_));

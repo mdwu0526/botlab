@@ -78,7 +78,7 @@ double h_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances)
 double g_cost(Node* from, Node* to, const ObstacleDistanceGrid& distances, const SearchParams& params)
 {
     // TODO: Return calculated g cost
-    double g_cost = 0;   // TODO: go diagnal is set to 1 in obstacle_distance_grid.cpp, check whether it is correct
+    double g_cost = 0;   // TODO: go diagonal is set to 1 in obstacle_distance_grid.cpp, check whether it is correct
     
     // if goal node is far enough from wall
     if (distances(to->cell.x, to->cell.y) >= params.maxDistanceWithCost) {

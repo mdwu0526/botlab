@@ -30,21 +30,6 @@ int main(int argc, char** argv)
     path.path.push_back(nextPose);
 
     nextPose.x += 0.0f;
-    nextPose.y += 0.61f;
-    nextPose.theta = 0.0f;
-    path.path.push_back(nextPose);
-
-    nextPose.x += 0.61f;
-    nextPose.y += 0.0f;
-    nextPose.theta = 0.0f;
-    path.path.push_back(nextPose);
-
-    nextPose.x += 0.0f;
-    nextPose.y -= 0.61f;
-    nextPose.theta = 0.0f;
-    path.path.push_back(nextPose);
-
-    nextPose.x += 0.0f;
     nextPose.y -= 0.61f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
@@ -71,6 +56,21 @@ int main(int argc, char** argv)
 
     nextPose.x += 0.0f;
     nextPose.y -= 0.61f;
+    nextPose.theta = 0.0f;
+    path.path.push_back(nextPose);
+
+    nextPose.x += 0.0f;
+    nextPose.y -= 0.61f;
+    nextPose.theta = 0.0f;
+    path.path.push_back(nextPose);
+
+    nextPose.x += 0.61f;
+    nextPose.y += 0.0f;
+    nextPose.theta = 0.0f;
+    path.path.push_back(nextPose);
+
+    nextPose.x += 0.0f;
+    nextPose.y += 0.61f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
 
@@ -111,8 +111,8 @@ int main(int argc, char** argv)
     // }
     
     // Return to original heading after completing all circuits
-//    nextPose.theta = 0.0f;
-//    path.path.push_back(nextPose);
+    // nextPose.theta = 0.0f;
+    // path.path.push_back(nextPose);
     
     // nextPose.x = 0.0f;
     // nextPose.y = 0.0f;

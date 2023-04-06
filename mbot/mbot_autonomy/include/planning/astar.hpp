@@ -15,7 +15,7 @@ struct Node
     double g_cost;
     Node* parent;
     cell_t cell;
-    Node(int a, int b) : h_cost(1.0E16), g_cost(0.0), parent(NULL), cell(a,b) {}
+    Node(int a, int b) : h_cost(1.0E16), g_cost(0), parent(NULL), cell(a,b) {}
 
     double f_cost(void) const { return g_cost + h_cost; }
     bool operator==(const Node& rhs) const
