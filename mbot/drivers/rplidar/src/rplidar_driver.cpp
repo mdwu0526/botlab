@@ -161,7 +161,7 @@ int main(int argc, const char * argv[]) {
     // fetch result and print it out...
     while (1) {
 
-        rplidar_response_measurement_node_hq_t nodes[360*2];
+        rplidar_response_measurement_node_hq_t nodes[8192];
         size_t   count = _countof(nodes);
 
         op_result = drv->grabScanDataHq(nodes, count);
