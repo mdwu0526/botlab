@@ -407,13 +407,8 @@ int main(int argc, char** argv)
     lcm::LCM lcmInstance(MULTICAST_URL);
     MotionController controller(&lcmInstance);
 
-<<<<<<< HEAD
-    float MAX_SPEED = 0.3;//0.8;//0.2;
-    float max_ang_vel = M_PI/4;//M_PI; // M_PI/4; //* 2.0 / 3.0;
-=======
     float MAX_SPEED = 0.2;//0.8;
     float max_ang_vel = M_PI/4; // M_PI; //* 2.0 / 3.0;
->>>>>>> refs/remotes/origin/main
     
     if(argc > 2)
     {

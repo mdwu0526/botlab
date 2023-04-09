@@ -144,7 +144,19 @@ std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node)
 std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> nodes, const ObstacleDistanceGrid& distances)
 {
     // TODO: prune the path to generate sparse waypoints
+    // simple version
     std::vector<mbot_lcm_msgs::pose_xyt_t> path;
+    for (auto& node : nodes) {
+        mbot_lcm_msgs::pose_xyt_t pose;
+        pose.x = node->cell.x;
+        pose.y = node->cell.y;
+        // waypoints in drive square are all zero, for testing
+        pose.theta = 0;
+        // calculate pose as the same direction of the line between current and parent point
+        // pose.theta = atan2(node->cell.y - node->parent->cell.y, node->cell.x - node->parent->cell.x);
+    }
+
+    // interpolation version
     return path;
 }
 

@@ -320,7 +320,7 @@ mbot_lcm_msgs::robot_path_t timed_find_path(const mbot_lcm_msgs::pose_xyt_t& sta
                              const std::string& testName)
 {
     // Perform each search many times to get better timing information
-    mbot_lcm_msgs::robot_path_t path;
+    mbot_lcm_msgs::robotcd_path_t path;
     for(int n = 0; n < repeatTimes; ++n)
     {
         int64_t startTime = utime_now();
