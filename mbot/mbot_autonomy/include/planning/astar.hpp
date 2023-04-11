@@ -113,7 +113,7 @@ struct SearchParams
 
 double h_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances);
 double g_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances, const SearchParams& params);
-std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances, const SearchParams& params);
+std::vector<Node> expand_node(Node* node, const ObstacleDistanceGrid& distances, const SearchParams& params);
 std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node);
 // To prune the path for the waypoint follower
 std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> nodes, const ObstacleDistanceGrid& distances);

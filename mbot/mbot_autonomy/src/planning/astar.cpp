@@ -41,9 +41,7 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
 
     // If openSet is not empty, continue running
     while(!openSet.empty()){
-        Node *n = openSet.pop();
-
-        std::vector<Node*> kids = expand_node(n, distances, params);
+        
 
     }
 
@@ -95,10 +93,10 @@ double o_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances, con
     return o_cost;
 }
 
-std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances, const SearchParams& params)
+std::vector<Node> expand_node(Node* node, const ObstacleDistanceGrid& distances, const SearchParams& params)
 {
     // TODO: Return children of a given node that are not obstacles
-    std::vector<Node*> children;
+    std::vector<Node> children;
     
     // using 8-way (diagonal distance) heuristics on grid
     const int xDeltas[8] = {1, 1, 1, 0, 0, -1, -1, -1};
@@ -112,7 +110,7 @@ std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances
             // if there is no collision
             Node child(adjacentCell.x, adjacentCell.y);
             child.parent = node;
-            children.push_back(&child);
+            children.push_back(child);
         }
     }
     return children;
