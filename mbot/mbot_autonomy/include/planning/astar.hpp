@@ -120,6 +120,7 @@ std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> node
 std::vector<Node*> prune_node_path(std::vector<Node*> nodePath);
 bool is_in_list(Node* node, std::vector<Node*> list);
 Node* get_from_list(Node* node, std::vector<Node*> list);
+void deleteKids (std::vector<Node*> &kids);
 
 
 /**

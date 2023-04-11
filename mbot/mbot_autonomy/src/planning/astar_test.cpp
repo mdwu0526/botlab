@@ -172,37 +172,37 @@ int main(int argc, char** argv)
 
 bool test_empty_grid(void)
 {
-    return test_saved_poses("../data/astar/empty.map", "../data/astar/empty_poses.txt", __FUNCTION__);
+    return test_saved_poses("../../data/astar/empty.map", "../../data/astar/empty_poses.txt", __FUNCTION__);
 }
 
 
 bool test_filled_grid(void)
 {
-    return test_saved_poses("../data/astar/filled.map", "../data/astar/filled_poses.txt", __FUNCTION__);
+    return test_saved_poses("../../data/astar/filled.map", "../../data/astar/filled_poses.txt", __FUNCTION__);
 }
 
 
 bool test_narrow_constriction_grid(void)
 {
-    return test_saved_poses("../data/astar/narrow.map", "../data/astar/narrow_poses.txt", __FUNCTION__);
+    return test_saved_poses("../../data/astar/narrow.map", "../../data/astar/narrow_poses.txt", __FUNCTION__);
 }
 
 
 bool test_wide_constriction_grid(void)
 {
-    return test_saved_poses("../data/astar/wide.map", "../data/astar/wide_poses.txt", __FUNCTION__);
+    return test_saved_poses("../../data/astar/wide.map", "../../data/astar/wide_poses.txt", __FUNCTION__);
 }
 
 
 bool test_convex_grid(void)
 {
-    return test_saved_poses("../data/astar/convex.map", "../data/astar/convex_poses.txt", __FUNCTION__);
+    return test_saved_poses("../../data/astar/convex.map", "../../data/astar/convex_poses.txt", __FUNCTION__);
 }
 
 
 bool test_maze_grid(void)
 {
-    return test_saved_poses("../data/astar/maze.map", "../data/astar/maze_poses.txt", __FUNCTION__);
+    return test_saved_poses("../../data/astar/maze.map", "../../data/astar/maze_poses.txt", __FUNCTION__);
 }
 
 
@@ -320,7 +320,7 @@ mbot_lcm_msgs::robot_path_t timed_find_path(const mbot_lcm_msgs::pose_xyt_t& sta
                              const std::string& testName)
 {
     // Perform each search many times to get better timing information
-    mbot_lcm_msgs::robotcd_path_t path;
+    mbot_lcm_msgs::robot_path_t path;
     for(int n = 0; n < repeatTimes; ++n)
     {
         int64_t startTime = utime_now();

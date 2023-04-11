@@ -22,6 +22,7 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
 
     // if the start node is already the goal
     if (startCell == goalCell) {
+        // std::cout << "Start node is already the goal" << std::endl;
         std::vector<Node*> nodes = extract_node_path( &goalNode, &startNode);
         path.path = extract_pose_path(nodes, distances);
         path.path_length = path.path.size();
@@ -33,8 +34,10 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
 
     // loop through the open list
     while (!openList.empty()) {
+        // std::cout << "In while loop" << std::endl;
         // pop the best score node
         Node* n = openList.pop();
+        
         // find neighbors of the best score node
         std::vector<Node*> kids = expand_node(n, distances, params);
         
@@ -46,6 +49,7 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
             // if this kid reaches the goal >>> return the path
             if (*kid == goalNode) // might use: kid->cell == goalCell
             {
+                std::cout << "Find the goal" << std::endl;
                 std::vector<Node *> nodes = extract_node_path(&goalNode, &startNode);
                 path.path = extract_pose_path(nodes, distances);
                 path.path_length = path.path.size();
@@ -57,14 +61,42 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
             }
             // store the node to clost list
             closeList.push_back(n);
-            
         }
+        deleteKids(kids);
+        
+        // // find neighbors of the best score node
+        // std::vector<Node> kids = expand_node(n, distances, params);
+        
+        // for (auto& kid : kids) {
+        //     // calculate f cost for kid: f_cost = h_cost + g_cost
+        //     kid.h_cost = h_cost(kid, &goalNode, distances);
+        //     kid.g_cost = g_cost(n, kid, distances, params);
+        //     kid.f_cost();
+        //     // if this kid reaches the goal >>> return the path
+        //     if (kid == goalNode) // might use: kid->cell == goalCell
+        //     {
+        //         std::cout << "Find the goal" << std::endl;
+        //         std::vector<Node *> nodes = extract_node_path(&goalNode, &startNode);
+        //         path.path = extract_pose_path(nodes, distances);
+        //         path.path_length = path.path.size();
+        //         return path;
+        //     }
+        //     // if this kid not reaches the goal && it is not in close list (not yet explored) >>> store this node into open list
+        //     if (!is_in_list(kid,closeList)) {
+        //         openList.push(kid);
+        //     }
+        //     // store the node to clost list
+        //     closeList.push_back(n);
+        // }
     }
-
     return path;
 }
 
-
+void deleteKids (std::vector<Node*> &kids) {
+    for (auto & kid : kids) {
+        delete kid;
+    }
+}
 
 double h_cost(Node* from, Node* goal, const ObstacleDistanceGrid& distances)
 {
@@ -80,20 +112,21 @@ double g_cost(Node* from, Node* to, const ObstacleDistanceGrid& distances, const
     // TODO: Return calculated g cost
     double g_cost = 0;   // TODO: go diagonal is set to 1 in obstacle_distance_grid.cpp, check whether it is correct
     
-    // if goal node is far enough from wall
-    if (distances(to->cell.x, to->cell.y) >= params.maxDistanceWithCost) {
-        g_cost = from->g_cost + 1;
-    }
-    // if goal node is close to wall
-    else {
-        // self-defined linear penalty equation, higher penalty when closer to wall
-        double g_penalty_max = 100; // modifiable, need to be choose
-        double k = - g_penalty_max/params.maxDistanceWithCost;
-        double d_distance  = distances(to->cell.x, to->cell.y) - distances(from->cell.x, from->cell.y);
-        double g_penalty =k * d_distance;
-        // current g cost = privious g cost + penalty g cost
-        g_cost = from->g_cost + g_penalty;
-    }
+    g_cost = from->g_cost + 1;
+    // // if goal node is far enough from wall
+    // if (distances(to->cell.x, to->cell.y) * distances.metersPerCell() >= params.maxDistanceWithCost) {
+    //     g_cost = from->g_cost + 1;
+    // }
+    // // if goal node is close to wall
+    // else {
+    //     // self-defined linear penalty equation, higher penalty when closer to wall
+    //     double g_penalty_max = 100; // modifiable, need to be choose
+    //     double k = - g_penalty_max/params.maxDistanceWithCost;
+    //     double d_distanceInCell  = distances(to->cell.x, to->cell.y) - distances(from->cell.x, from->cell.y);
+    //     double g_penalty =k * d_distanceInCell;
+    //     // current g cost = privious g cost + penalty g cost
+    //     g_cost = from->g_cost + g_penalty;
+    // }
     
     return g_cost;
 }
@@ -101,6 +134,7 @@ double g_cost(Node* from, Node* to, const ObstacleDistanceGrid& distances, const
 std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances, const SearchParams& params)
 {
     // TODO: Return children of a given node that are not obstacles
+    std::cout << "In function expand_node" << std::endl;
     std::vector<Node*> children;
     
     // using 8-way (diagonal distance) heuristics on grid
@@ -113,14 +147,14 @@ std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances
         // if it is in the distance grid
         if(distances.isCellInGrid(adjacentCell.x, adjacentCell.y)){
             // if there is no collision
-            if(distances(adjacentCell.x, adjacentCell.y) > params.minDistanceToObstacle){ // TODO: convert grid to meters
+            if(distances(adjacentCell.x, adjacentCell.y) * distances.metersPerCell() > params.minDistanceToObstacle){ // IMPORTANT: convert grid to meters
                 // add node to children and set parent node, h cost and g cost are calculated seperately
-                // Node* adjacentNode = new Node(adjacentCell.x, adjacentCell.y);
-                // adjacentNode->parent = node;
-                // children.push_back(adjacentNode); 
-                Node adjacentNode(adjacentCell.x, adjacentCell.y);
-                adjacentNode.parent = node;
-                children.push_back(&adjacentNode); //TODO: check, here pushing local variable, maybe point to null pointer?
+                Node* adjacentNode = new Node(adjacentCell.x, adjacentCell.y);
+                adjacentNode->parent = node;
+                children.push_back(adjacentNode); 
+                // Node adjacentNode(adjacentCell.x, adjacentCell.y);
+                // adjacentNode.parent = node;
+                // children.push_back(&adjacentNode); //TODO: check, here pushing local variable, maybe point to null pointer?
             }
         }
     }
@@ -130,6 +164,7 @@ std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances
 std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node)
 {
     // TODO: Generate path by following parent nodes
+    std::cout << "In function extract_node_path" << std::endl;
     std::vector<Node*> path;
     Node* current_node = goal_node;
     while (!(*current_node == *start_node)) {
@@ -137,6 +172,12 @@ std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node)
         current_node = current_node->parent;
     }
     path.push_back(start_node);
+
+    for (int i=0; i< path.size(); i++) {
+        std::cout << "Print path: " << std::endl;
+        std::cout << path[i]->cell.x << path[i]->cell.y << std::endl;
+    }
+
     return path;
 }
 
@@ -148,12 +189,17 @@ std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> node
     std::vector<mbot_lcm_msgs::pose_xyt_t> path;
     for (auto& node : nodes) {
         mbot_lcm_msgs::pose_xyt_t pose;
-        pose.x = node->cell.x;
-        pose.y = node->cell.y;
+        // convert the cell position to global position
+        Point<double> gridPosition = node->cell;
+        Point<double> globalPosition = grid_position_to_global_position(gridPosition , distances);
+
+        pose.x = globalPosition.x;
+        pose.y = globalPosition.y;
         // waypoints in drive square are all zero, for testing
         pose.theta = 0;
         // calculate pose as the same direction of the line between current and parent point
         // pose.theta = atan2(node->cell.y - node->parent->cell.y, node->cell.x - node->parent->cell.x);
+        path.push_back(pose);
     }
 
     // interpolation version
