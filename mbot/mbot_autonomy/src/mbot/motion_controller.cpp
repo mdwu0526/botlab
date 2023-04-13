@@ -40,10 +40,10 @@ class StraightManeuverController : public ManeuverControllerBase
 {
 
 private:
-    float fwd_pid[3] = {3.0, 0.5, 0};
+    float fwd_pid[3] = {1.0, 0.0, 0};
     float fwd_sum_error = 0;
     float fwd_last_error = 0;
-    float turn_pid[3] = {12.0, 1, 0};
+    float turn_pid[3] = {3.0, 0, 0};
     float turn_sum_error = 0;
     float turn_last_error = 0;
 public:
@@ -84,7 +84,7 @@ public:
 class TurnManeuverController : public ManeuverControllerBase
 {
 private:
-    float turn_pid[3] = {40, 10, 1};
+    float turn_pid[3] = {3, 0, 0};
     float turn_sum_error = 0;
     float turn_last_error = 0;
 public:
@@ -362,7 +362,7 @@ private:
     bool assignNextTarget(void)
     {
         if(!targets_.empty()) { targets_.pop_back(); }
-        state_ = SMART; 
+        state_ = SMART; // Change what controller to use
         return !targets_.empty();
     }
     
