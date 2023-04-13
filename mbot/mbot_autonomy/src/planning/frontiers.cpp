@@ -122,13 +122,63 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
 
     // First, choose the frontier to go to
     // Initial alg: find the nearest one
+    frontier_t closest_frontier = frontiers.at(0);
+    frontier_t next_frontier;
+    CompareCentroids compare(robotPose);
+    for (int i=1; i<frontiers.size(); i++) {
+        next_frontier = frontiers.at(i);
+        
+        if(compare(find_frontier_centroid(next_frontier), find_frontier_centroid(closest_frontier))) {
+            closest_frontier = next_frontier;
+        }
+    }
 
-    // Returnable path
+    Point<int> f_c = global_position_to_grid_cell(find_frontier_centroid(closest_frontier), map);
+
+
     mbot_lcm_msgs::robot_path_t path;
     path.utime = utime_now();
-    path.path_length = 1;
-    path.path.push_back(robotPose);
+
+    Point<double> global_p;
+
+    mbot_lcm_msgs::pose_xyt_t goal;
+    goal.utime = utime_now();
+    goal.theta = 0;
+
+    int count = 1; bool foundCell = false;
+    if(map(f_c.x, f_c.y) < 0) {count = 30; foundCell = true;}
+    while (count < 30 || foundCell) {
+        f_c.x += count;
+        if(map(f_c.x, f_c.y) < 0) {foundCell = true; break;}
+        f_c.x -= 2*count;
+        if(map(f_c.x, f_c.y) < 0) {foundCell = true; break;}
+        f_c.x += count; f_c.y += count;
+        if(map(f_c.x, f_c.y) < 0) {foundCell = true; break;}
+        f_c.y -= 2*count;
+        if(map(f_c.x, f_c.y) < 0) {foundCell = true; break;}
+        f_c.y += count;
+
+        count += 1;
+    }
     int unreachable_frontiers = 0;
+    if (foundCell) {
+        Point<double> f_g = grid_position_to_global_position(f_c, map);
+        goal.x = f_g.x; goal.y = f_g.y;
+        path = planner.planPath(robotPose, goal);
+        
+    }
+    else {
+        // Returnable path
+        path.path_length = 1;
+        path.path.push_back(robotPose);
+        unreachable_frontiers = 0;
+    }
+
+
+
+
+
+    
 
     
     return frontier_processing_t(path, unreachable_frontiers);
