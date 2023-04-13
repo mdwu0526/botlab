@@ -8,7 +8,12 @@
 
 #include <utils/grid_utils.hpp>
 #include <common_utils/geometric/point.hpp>
-
+// #include <chrono>
+// #include <sys/time.h>
+// #include <ctime>
+// using std::chrono::duration_cast;
+// using std::chrono::milliseconds;
+// using std::chrono::system_clock;
 
 ParticleFilter::ParticleFilter(int numParticles)
 : kNumParticles_ (numParticles),
@@ -108,13 +113,21 @@ mbot_lcm_msgs::pose_xyt_t ParticleFilter::updateFilter(const mbot_lcm_msgs::pose
 
     if(hasRobotMoved)
     {
+        // auto millisec_since_epoch = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        // std::cout << "\n" << millisec_since_epoch << "\n";
         auto prior = resamplePosteriorDistribution(&map); // is map needed here? Not in Gaskell's example
         auto proposal = computeProposalDistribution(prior);
         posterior_ = computeNormalizedPosterior(proposal, laser, map);
         // OPTIONAL TODO: Add reinvigoration step
         posteriorPose_ = estimatePosteriorPose(posterior_);
+        std::cout << odometry.x << ", " << odometry.y << ", " << odometry.theta << ", " << posteriorPose_.x << ", " << posteriorPose_.y << ", " << posteriorPose_.theta << "\n";
+
+
+        // auto millisec_since_epoch2 = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+        // std::cout << millisec_since_epoch2 << "\n";
     }
     posteriorPose_.utime = odometry.utime;
+    // std::cout<<"posteriorPose_.utime after reset = "<<posteriorPose_.utime<<"\n";
     return posteriorPose_;
 }
 

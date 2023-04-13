@@ -116,27 +116,27 @@ int BotGui::onMouseEvent(vx_layer_t* layer,
     // If an Right-click, send a target to the A* planner
     else if((event->button_mask & VX_BUTTON3_MASK)) // && (event->modifiers == 0)
     {
-        /*
+        
         std::cout << "Planning path to " << worldPoint << "...";
         int64_t startTime = utime_now();
-        pose_xyt_t target;
+        mbot_lcm_msgs::pose_xyt_t target;
         target.x = worldPoint.x;
         target.y = worldPoint.y;
         target.theta = 0.0f;
         
         MotionPlanner planner;
         planner.setMap(map_);
-        robot_path_t plannedPath = planner.planPath(slamPose_, target);
+        mbot_lcm_msgs::robot_path_t plannedPath = planner.planPath(slamPose_, target);
         distances_ = planner.obstacleDistances();
         lcmInstance_->publish(CONTROLLER_PATH_CHANNEL, &plannedPath);
         
-        std::cout << "completed in " << ((utime_now() - startTime) / 1000) << "ms\n";*/
+        std::cout << "completed in " << ((utime_now() - startTime) / 1000) << "ms\n";
 
         //Instead of the ROB550 path planning code, send the goal to the BOTGUI GOAL CHANNEL (so LCM server can receive it) 
-        mbot_lcm_msgs::pose_xyt_t target;
-        target.x = worldPoint.x;
-        target.y = worldPoint.y;
-        target.theta = 0.0f;
+        // mbot_lcm_msgs::pose_xyt_t target;
+        // target.x = worldPoint.x;
+        // target.y = worldPoint.y;
+        // target.theta = 0.0f;
         // If an odometry trace exists, then we need to transform the Vx reference frame into the odometry frame
         auto odomTraceIt = traces_.find(ODOMETRY_CHANNEL);
         if(odomTraceIt != traces_.end())
