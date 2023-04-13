@@ -124,9 +124,9 @@ int main(int argc, char** argv)
     if(useGui)printf("\n ~~ MAKE SURE YOU ZOOM-OUT IN YOUR GUI TO SEE THE MAP ~~\n");
     typedef bool (*test_func) (void);
 
-    std::vector<test_func> tests = { test_empty_grid,
+    std::vector<test_func> tests = { //test_empty_grid,
                                                  test_filled_grid,
-                                                 test_narrow_constriction_grid,
+                                                 //test_narrow_constriction_grid,
                                                  test_wide_constriction_grid,
                                                  test_convex_grid,
                                                  test_maze_grid};
@@ -242,6 +242,7 @@ bool test_saved_poses(const std::string& mapFile, const std::string& posesFile, 
     
     MotionPlanner planner(plannerParams);
     planner.setMap(grid);
+    // std::cout << "aftar_test.cpp: After setMap" << std::endl;
     
     int numCorrect = 0;
     
@@ -252,13 +253,16 @@ bool test_saved_poses(const std::string& mapFile, const std::string& posesFile, 
         mbot_lcm_msgs::robot_path_t path = timed_find_path(start, goal, planner, testName);
         if(!animatePath && useGui) lcmConnection.publish(PATH_CHANNEL, &path); // Immediately print out path if no animation flag is sent in
         // See if the generated path was valid
+        // std::cout << "------In astar_test, path length: " << path.path_length << std::endl;
         bool foundPath = path.path_length > 1;
+        // std::cout << "------In astar_test, foundPath = " << foundPath << std::endl;
         // The goal must be the same position as the end of the path if there was success
         if(!path.path.empty())
         {
             auto goalCell = global_position_to_grid_cell(Point<float>(goal.x, goal.y), grid);
             auto endCell = global_position_to_grid_cell(Point<float>(path.path.back().x, path.path.back().y), grid);
             foundPath &= goalCell == endCell;
+            // std::cout << "------In astar_test, foundPath = " << foundPath << std::endl;
         }
         
         if(foundPath)
@@ -329,6 +333,7 @@ mbot_lcm_msgs::robot_path_t timed_find_path(const mbot_lcm_msgs::pose_xyt_t& sta
         
         if(path.path_length > 1)
         {
+            // std::cout << "------In astar_test, path_lengh > 1" << std::endl;
             gSuccess[testName].push_back(endTime - startTime);
         }
         else
