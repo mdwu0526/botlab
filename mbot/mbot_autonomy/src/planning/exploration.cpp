@@ -265,7 +265,7 @@ int8_t Exploration::executeExploringMap(bool initialize)
     */
     frontier_processing_t front_processing = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
     frontiers_ = find_map_frontiers(currentMap_, currentPose_);
-    
+    currentPath_ = front_processing.path_selected;
     /////////////////////////////// End student code ///////////////////////////////
     
     /////////////////////////   Create the status message    //////////////////////////
@@ -327,6 +327,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
     */
     
     printf("Returning home\n");
+    currentPath_ = planner_.planPath(currentPose_,homePose_);
 
     /////////////////////////////// End student code ///////////////////////////////
     

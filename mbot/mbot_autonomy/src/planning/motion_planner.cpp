@@ -67,7 +67,8 @@ bool MotionPlanner::isValidGoal(const mbot_lcm_msgs::pose_xyt_t& goal) const
         // And is far enough from obstacles that the robot scan physically occupy the space
         // Add an extra cell to account for discretization error and make motion a little safer by not trying to
         // completely snuggle up against the walls in the motion plan
-        std::cout << "motion_planner.cpp: Goal is valid" <<std::endl;
+        
+        // std::cout << "motion_planner.cpp: Goal is valid" <<std::endl;
         
         // change back once the obstacle distance grid get updated
         // return distances_(goalCell.x, goalCell.y) > params_.robotRadius;
@@ -75,7 +76,7 @@ bool MotionPlanner::isValidGoal(const mbot_lcm_msgs::pose_xyt_t& goal) const
     }
     
     // A goal must be in the map for the robot to reach it
-    std::cout << "motion_planner.cpp: Goal not valid" << std::endl;
+    // std::cout << "motion_planner.cpp: Goal not valid" << std::endl;
     return false;
 }
 
@@ -105,7 +106,7 @@ bool MotionPlanner::isPathSafe(const mbot_lcm_msgs::robot_path_t& path) const
 
 void MotionPlanner::setMap(const OccupancyGrid& map)
 {
-    std::cout << "motion_planner: Setting obstacle distance grid..." << std::endl;
+    // std::cout << "motion_planner: Setting obstacle distance grid..." << std::endl;
     distances_.setDistances(map);
 }
 

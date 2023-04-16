@@ -60,7 +60,7 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
                 // if this kid reaches the goal >>> return the path
                 if ((kid->cell.x == goalNode.cell.x) && (kid->cell.y == goalNode.cell.y)) // might use: kid->cell == goalCell
                 {
-                    std::cout << "Find the goal" << std::endl;
+                    std::cout << "Find the goal!" << std::endl;
                     std::vector<Node *> nodes = extract_node_path(kid, &startNode);
                     path.path = extract_pose_path(nodes, distances);
                     path.path_length = path.path.size();
@@ -175,7 +175,7 @@ std::vector<Node*> expand_node(Node* node, const ObstacleDistanceGrid& distances
 std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node)
 {
     // TODO: Generate path by following parent nodes
-    std::cout << "--RUNNING extract_node_path..." << std::endl;
+    // std::cout << "--RUNNING extract_node_path..." << std::endl;
     std::vector<Node*> path;
     Node* current_node = goal_node;
     path.push_back(current_node);
@@ -198,7 +198,7 @@ std::vector<Node*> extract_node_path(Node* goal_node, Node* start_node)
 std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> nodes, const ObstacleDistanceGrid& distances)
 {
     // TODO: prune the path to generate sparse waypoints
-    std::cout << "--RUNNING extract_pose_path..." << std::endl;
+    // std::cout << "--RUNNING extract_pose_path..." << std::endl;
     // simple version
     std::vector<mbot_lcm_msgs::pose_xyt_t> path;
     for (auto& node : nodes) {
