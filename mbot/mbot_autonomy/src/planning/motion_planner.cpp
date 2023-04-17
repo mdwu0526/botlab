@@ -68,7 +68,7 @@ bool MotionPlanner::isValidGoal(const mbot_lcm_msgs::pose_xyt_t& goal) const
         // Add an extra cell to account for discretization error and make motion a little safer by not trying to
         // completely snuggle up against the walls in the motion plan
         
-        // std::cout << "motion_planner.cpp: Goal is valid" <<std::endl;
+        std::cout << "motion_planner.cpp: Goal is valid" <<std::endl;
         
         // change back once the obstacle distance grid get updated
         // return distances_(goalCell.x, goalCell.y) > params_.robotRadius;

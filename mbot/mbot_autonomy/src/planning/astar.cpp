@@ -11,6 +11,7 @@ mbot_lcm_msgs::robot_path_t search_for_path(mbot_lcm_msgs::pose_xyt_t start,
 {
     cell_t goalCell = global_position_to_grid_cell(Point<double>(goal.x, goal.y), distances);
     ////////////////// TODO: Implement your A* search here //////////////////////////
+    std::cout << "astar.cpp: In search_for path" << std::endl;
     // initialize the path
     mbot_lcm_msgs::robot_path_t path;
     
