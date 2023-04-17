@@ -152,7 +152,7 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
     
     // do BFS for 3000 points near the centriod of current frontier
     int count = 0;
-    while (count < 30) { // threshold to find near point
+    while (count < 3000) { // threshold to find near point
         // take the first point
         Point<int> nextCell = cellQueue.front();
         cellQueue.pop();
@@ -167,7 +167,7 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
                 cellQueue.push(neighbor);
                 count++;
                 // if point is reachable and closer, assign it to closestPointGlobal
-                if (is_centroid_reachable(neighbor, robotPose, map, planner)) {
+                if (is_centroid_reachable(neighborGlobal, robotPose, map, planner)) {
                     std::cout << "FRONTIERS: neighbor is reachable" << std::endl;
                     if (compare(neighborGlobal, closestPointGlobal)){
                         closestPointGlobal.x = neighborGlobal.x;
