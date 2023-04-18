@@ -137,7 +137,7 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
     // std::cout << "FRONTIERS: Check 1" << std::endl;
 
     // initialize the closest reachable point in global grid
-    Point<double> closestPointGlobal; closestPointGlobal.x = 9999999; closestPointGlobal.y = 9999999;
+    Point<double> closestPointGlobal; closestPointGlobal.x = robotPose.x; closestPointGlobal.y = robotPose.y;
 
     // find the closest reachable point near the closest frontier
     // centriod of current frontier
@@ -152,7 +152,8 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
     
     // do BFS for 3000 points near the centriod of current frontier
     int count = 0;
-    while (count < 3000) { // threshold to find near point
+    bool while_break = false;
+    while (count < 3000 && !while_break) { // threshold to find near point
         // take the first point
         Point<int> nextCell = cellQueue.front();
         cellQueue.pop();
@@ -160,20 +161,25 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
         for (int i =0; i<kNumNeighbors; i++) {
             Point<int> neighbor(nextCell.x + xDeltas[i], nextCell.y + yDeltas[i]);
             Point<double> neighborGlobal = grid_position_to_global_position(neighbor, map);
-            printf("FRONTIERS: Neighbor(Global): (%f,%f)\n", neighborGlobal.x, neighborGlobal.y);
+            // printf("FRONTIERS: Neighbor(Global): (%f,%f)\n", neighborGlobal.x, neighborGlobal.y);
             // if point is not yet explored, put it into set and queue, add count 
             if (visitedCell.find(neighbor) == visitedCell.end()) {
                 visitedCell.insert(neighbor);
                 cellQueue.push(neighbor);
                 count++;
-                // if point is reachable and closer, assign it to closestPointGlobal
+                // if point is reachable, assign it to closestPointGlobal
                 if (is_centroid_reachable(neighborGlobal, robotPose, map, planner)) {
-                    std::cout << "FRONTIERS: neighbor is reachable" << std::endl;
-                    if (compare(neighborGlobal, closestPointGlobal)){
-                        closestPointGlobal.x = neighborGlobal.x;
-                        closestPointGlobal.y = neighborGlobal.y;
-                        printf("FRONTIERS: ClosestNeighbor(Global): (%f,%f)\n", neighborGlobal.x, neighborGlobal.y);
-                    }
+                    closestPointGlobal.x = neighborGlobal.x;
+                    closestPointGlobal.y = neighborGlobal.y;
+                    while_break = true;
+                    break;
+
+                    // std::cout << "FRONTIERS: neighbor is reachable" << std::endl;
+                    // if (compare(neighborGlobal, closestPointGlobal)){
+                    //     closestPointGlobal.x = neighborGlobal.x;
+                    //     closestPointGlobal.y = neighborGlobal.y;
+                    //     // printf("FRONTIERS: ClosestNeighbor(Global): (%f,%f)\n", neighborGlobal.x, neighborGlobal.y);
+                    // }
                 }
             }
         }
@@ -329,9 +335,9 @@ bool is_centroid_reachable(const Point<double>& centroid,
     goal.x = centroid.x; goal.y = centroid.y;
     // if the path length is 1, return false
     if (planner.planPath(robotPose, goal).path_length <= 1) {
-        std::cout << "FRONTIERS: This point is unreachable" << std::endl;
+        // std::cout << "FRONTIERS: This point is unreachable" << std::endl;
         return false;   
     }
     return true;
-    std::cout << "FRONTIERS: This point is reachable!" << std::endl;
+    // std::cout << "FRONTIERS: This point is reachable!" << std::endl;
 }

@@ -26,9 +26,9 @@ using pose_vec_t = std::vector<pose_t>;
 bool are_equal(const pose_vec_t& lhs, const pose_vec_t& rhs)
 {
     if(lhs.size() != rhs.size()) return false;
-    for (const auto& l: lhs)
-        for (const auto& r: rhs)
-            if (!are_equal(l, r)) return false;
+    for (int index=0; index < lhs.size(); index++) {
+        if (!are_equal(lhs[index], rhs[index])) return false;
+    }
     return true;
 }
 
@@ -265,9 +265,23 @@ int8_t Exploration::executeExploringMap(bool initialize)
     */
     std::cout << "EXPLORATION: Check" << std::endl;
     frontiers_ = find_map_frontiers(currentMap_, currentPose_);
-    frontier_processing_t front_processing = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);;
-    currentPath_ = front_processing.path_selected;
-    std::cout << "EXPLORATION: current path length: " << currentPath_.path_length << std::endl;
+    frontier_processing_t front_processing = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
+
+    if (currentPath_.path.size() > 0) {
+        double x_diff = std::abs(currentPose_.x - currentPath_.path[currentPath_.path.size()-1].x);
+        std::cout << "x_diff = " << x_diff << "\n";
+        double y_diff = std::abs(currentPose_.y - currentPath_.path[currentPath_.path.size()-1].y);
+        std::cout << "y_diff = " << y_diff << "\n";
+        if (x_diff < 0.05 && y_diff < 0.05) {
+            currentPath_ = front_processing.path_selected;
+        }
+    }
+    else {
+        currentPath_ = front_processing.path_selected;
+    }
+    
+    // currentPath_ = front_processing.path_selected;
+    // std::cout << "EXPLORATION: current path length: " << currentPath_.path_length << std::endl;
     
     /////////////////////////////// End student code ///////////////////////////////
     
