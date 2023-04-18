@@ -205,6 +205,7 @@ std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> node
     // std::cout << "--RUNNING extract_pose_path..." << std::endl;
     // simple version
     std::vector<mbot_lcm_msgs::pose_xyt_t> path;
+    int count = 0; int lastCount = nodes.size()-1; int stride = 4; // 8 for fast
     for (auto& node : nodes) {
         mbot_lcm_msgs::pose_xyt_t pose;
         // convert the cell position to global position
@@ -217,7 +218,11 @@ std::vector<mbot_lcm_msgs::pose_xyt_t> extract_pose_path(std::vector<Node*> node
         pose.theta = 0;
         // calculate pose as the same direction of the line between current and parent point
         // pose.theta = atan2(node->cell.y - node->parent->cell.y, node->cell.x - node->parent->cell.x);
-        path.push_back(pose);
+        
+        if (count == 0 || count == lastCount || count%stride == 0) {
+            path.push_back(pose);
+        }
+        count ++;
     }
 
     // interpolation version
