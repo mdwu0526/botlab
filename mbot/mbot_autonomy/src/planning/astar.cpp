@@ -122,8 +122,11 @@ double g_cost(Node* from, Node* to, const ObstacleDistanceGrid& distances, const
     double cost_obst = 0;
     float cellDistance = distances(from->cell.x, from->cell.y) ;
     if (cellDistance > params.minDistanceToObstacle && cellDistance < params.maxDistanceWithCost){
-        cost_obst = pow(params.maxDistanceWithCost - cellDistance, 2.5/*params.distanceCostExponent*/) ;
+        cost_obst = pow(params.maxDistanceWithCost - cellDistance, params.distanceCostExponent); // 2.5?
     }
+    // if (cost_obst > 0) {
+    //     std::cout << "cost_obst = " << cost_obst << "\n";
+    // }
     
     double cost_move = 0;
     cost_move = sqrt((from->cell.x - to->cell.x)*(from->cell.x - to->cell.x) + (from->cell.y - to->cell.y)*(from->cell.y - to->cell.y));

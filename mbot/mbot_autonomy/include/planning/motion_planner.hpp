@@ -15,6 +15,9 @@
 struct MotionPlannerParams
 {
     double robotRadius;     ///< Radius of the robot for which paths are being planned
+    // double minDistanceToObstacle;
+    // double maxDistanceWithCost;
+    // double distanceCostExponent;
 
     /**
     * Default constructor for MotionPlannerParams.
@@ -28,6 +31,9 @@ struct MotionPlannerParams
     */
     MotionPlannerParams(void)
     : robotRadius(0.2) // by default, have a little extra slop to keep the robot from getting too close to the walls
+    //   minDistanceToObstacle(0.01),
+    //   maxDistanceWithCost(0.015),
+    //   distanceCostExponent(2.5)
     {
     }
 };

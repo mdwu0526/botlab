@@ -60,7 +60,12 @@ Exploration::Exploration(int32_t teamNumber,
     lcmInstance_->publish(EXPLORATION_STATUS_CHANNEL, &status);
     
     MotionPlannerParams params;
-    params.robotRadius = 0.2;
+    params.robotRadius = 0.2; // 0.2;
+
+    // params.minDistanceToObstacle = 0.001;
+    // params.maxDistanceWithCost = 1.0;
+    // params.distanceCostExponent = 5.0;
+
     planner_.setParams(params);
 
     // To prevent the exploration finishing on the start
@@ -350,9 +355,9 @@ int8_t Exploration::executeReturningHome(bool initialize)
     */
     
     printf("Returning home\n");
-    if (currentPath_.path.size() == 0) {
-        currentPath_ = planner_.planPath(currentPose_,homePose_);
-    }
+    // if (currentPath_.path.size() == 0) {
+    currentPath_ = planner_.planPath(currentPose_,homePose_);
+    // }
     // double x_diff = std::abs(currentPose_.x - currentPath_.path[currentPath_.path.size()-1].x);
     // double y_diff = std::abs(currentPose_.y - currentPath_.path[currentPath_.path.size()-1].y);
     // double dist = std::sqrt(std::pow(x_diff,2) + std::pow(y_diff,2));

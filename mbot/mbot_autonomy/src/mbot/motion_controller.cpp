@@ -174,7 +174,7 @@ public:
         float turn_vel = pid[1] * alpha + pid[2] * beta;
 
         // If alpha is more than 45 degrees, turn in place and then go
-        if (fabs(alpha) > M_PI_4/1)
+        if (fabs(alpha) > M_PI_4/2) // /1
         {
             fwd_vel = 0;
         }
