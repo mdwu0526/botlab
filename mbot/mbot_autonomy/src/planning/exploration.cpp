@@ -350,11 +350,13 @@ int8_t Exploration::executeReturningHome(bool initialize)
     */
     
     printf("Returning home\n");
-    currentPath_ = planner_.planPath(currentPose_,homePose_);
-    double x_diff = std::abs(currentPose_.x - currentPath_.path[currentPath_.path.size()-1].x);
-    double y_diff = std::abs(currentPose_.y - currentPath_.path[currentPath_.path.size()-1].y);
-    double dist = std::sqrt(std::pow(x_diff,2) + std::pow(y_diff,2));
-    std::cout << "diff = " << dist << "\n";
+    if (currentPath_.path.size() == 0) {
+        currentPath_ = planner_.planPath(currentPose_,homePose_);
+    }
+    // double x_diff = std::abs(currentPose_.x - currentPath_.path[currentPath_.path.size()-1].x);
+    // double y_diff = std::abs(currentPose_.y - currentPath_.path[currentPath_.path.size()-1].y);
+    // double dist = std::sqrt(std::pow(x_diff,2) + std::pow(y_diff,2));
+    // std::cout << "diff = " << dist << "\n";
 
     /////////////////////////////// End student code ///////////////////////////////
     
@@ -366,6 +368,7 @@ int8_t Exploration::executeReturningHome(bool initialize)
     
     double distToHome = distance_between_points(Point<float>(homePose_.x, homePose_.y), 
                                                 Point<float>(currentPose_.x, currentPose_.y));
+    std::cout << "distToHome" << distToHome << std::endl;
     // If we're within the threshold of home, then we're done.
     if(distToHome <= kReachedPositionThreshold)
     {
