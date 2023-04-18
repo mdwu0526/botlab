@@ -122,9 +122,17 @@ frontier_processing_t plan_path_to_frontier(const std::vector<frontier_t>& front
 
     // First, choose the frontier to go to
     // Initial alg: find the nearest one
+
+    int unreachable_frontiers = 0;
+
+    if (frontiers.size() == 0) {
+        mbot_lcm_msgs::robot_path_t path;
+        
+        return frontier_processing_t(path, unreachable_frontiers);
+    }
     
     // calculate the number of unreachable frontiers
-    int unreachable_frontiers = 0;
+    
     frontier_t closest_frontier = frontiers.at(0);
     CompareCentroids compare(robotPose);
 

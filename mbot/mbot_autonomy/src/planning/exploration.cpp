@@ -266,19 +266,25 @@ int8_t Exploration::executeExploringMap(bool initialize)
     std::cout << "EXPLORATION: Check" << std::endl;
     frontiers_ = find_map_frontiers(currentMap_, currentPose_);
     frontier_processing_t front_processing = plan_path_to_frontier(frontiers_, currentPose_, currentMap_, planner_);
-
+    
     if (currentPath_.path.size() > 0) {
         double x_diff = std::abs(currentPose_.x - currentPath_.path[currentPath_.path.size()-1].x);
-        std::cout << "x_diff = " << x_diff << "\n";
+        // std::cout << "x_diff = " << x_diff << "\n";
         double y_diff = std::abs(currentPose_.y - currentPath_.path[currentPath_.path.size()-1].y);
-        std::cout << "y_diff = " << y_diff << "\n";
-        if (x_diff < 0.05 && y_diff < 0.05) {
+        // std::cout << "y_diff = " << y_diff << "\n";
+        // if (x_diff < kReachedPositionThreshold && y_diff < kReachedPositionThreshold) {
+        //     currentPath_ = front_processing.path_selected;
+        // }
+        double dist = std::sqrt(std::pow(x_diff,2) + std::pow(y_diff,2));
+        if (dist < kReachedPositionThreshold) {
             currentPath_ = front_processing.path_selected;
         }
     }
     else {
         currentPath_ = front_processing.path_selected;
     }
+
+
     
     // currentPath_ = front_processing.path_selected;
     // std::cout << "EXPLORATION: current path length: " << currentPath_.path_length << std::endl;
@@ -345,6 +351,10 @@ int8_t Exploration::executeReturningHome(bool initialize)
     
     printf("Returning home\n");
     currentPath_ = planner_.planPath(currentPose_,homePose_);
+    double x_diff = std::abs(currentPose_.x - currentPath_.path[currentPath_.path.size()-1].x);
+    double y_diff = std::abs(currentPose_.y - currentPath_.path[currentPath_.path.size()-1].y);
+    double dist = std::sqrt(std::pow(x_diff,2) + std::pow(y_diff,2));
+    std::cout << "diff = " << dist << "\n";
 
     /////////////////////////////// End student code ///////////////////////////////
     
