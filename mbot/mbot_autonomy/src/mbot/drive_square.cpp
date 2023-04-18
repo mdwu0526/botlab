@@ -10,7 +10,7 @@
 
 int main(int argc, char** argv)
 {
-    int numTimes = 1; //4
+    int numTimes = 3; //4
     
     if(argc > 1)
     {
@@ -28,41 +28,41 @@ int main(int argc, char** argv)
     nextPose.y = 0.0f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
-    // for(int n = 0; n < numTimes; ++n)
-    // {
-    //     path.path[4*n] = nextPose;
-    // }
+    for(int n = 0; n < numTimes; ++n)
+    {
+        path.path[4*n] = nextPose;
+    }
     
     nextPose.x += 0.0f;
     nextPose.y += 1.0f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
-    // for(int n = 0; n < numTimes; ++n)
-    // {
-    //     path.path[4*n + 1] = nextPose;
-    // }
+    for(int n = 0; n < numTimes; ++n)
+    {
+        path.path[4*n + 1] = nextPose;
+    }
     
     nextPose.x -= 1.0f;
     nextPose.y += 0.0f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
-    // for(int n = 0; n < numTimes; ++n)
-    // {
-    //     path.path[4*n + 2] = nextPose;
-    // }
+    for(int n = 0; n < numTimes; ++n)
+    {
+        path.path[4*n + 2] = nextPose;
+    }
     
     nextPose.x += 0.0f;
     nextPose.y -= 1.0f;
     nextPose.theta = 0.0f;
     path.path.push_back(nextPose);
-    // for(int n = 0; n < numTimes; ++n)
-    // {
-    //     path.path[4*n + 3] = nextPose;
-    // }
+    for(int n = 0; n < numTimes; ++n)
+    {
+        path.path[4*n + 3] = nextPose;
+    }
     
     // Return to original heading after completing all circuits
-    // nextPose.theta = 0.0f;
-    // path.path.push_back(nextPose);
+    nextPose.theta = 0.0f;
+    path.path.push_back(nextPose);
     
     nextPose.x = 0.0f;
     nextPose.y = 0.0f;
